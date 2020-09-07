@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tromby Test</title>
+	<!-- Load the Paper.js library -->
+	<script type="text/javascript" src="js/paper-full.js"></script>
+	<script type="text/javascript" src="js/howler.js"></script>
+	<!-- Define inlined PaperScript associate it with myCanvas -->
+	<script type="text/paperscript" canvas="myCanvas">
+
+	//paper/canvas variables
+	var pWidth = view.bounds.width;
+	var pHeight = view.bounds.height;
+	var midY = pHeight / 2;
+
+	//shape variables
+	var width = 100;
+	var height = 100;
+
+	var seventh = (pWidth - (width * 1.5)) / 7;
+
+	var rectSize = new Size(width, height);
+	var rectPoint = new Point(width , (midY - (rectSize.height/2)));
+
+	var rect = new Shape.Rectangle(rectPoint, rectSize);
+	rect.fillColor = 'blue';
+
+	globals.calcPosition = function(s){
+		return seventh * s;
+	};
+
+	globals.tween = function(num) {
+			
+		rect.tween({
+		    'position.x': num,
+		    'fillColor.hue': '+= 90'
+		}, {
+		    easing: 'easeInOutCubic',
+		    duration: 500
+		});
+	}
+
+	globals.hi = function(){
+		testing();
+	}
+
+	function testing(){
+		console.log("paper says hi");
+	}
+	 
+	function onResize(event) {
+	   // Whenever the window is resized, recenter the path:
+	   //rect.position = view.center;
+	}
+
+	// console.log(paper.project._view._id); //paperScope object id
+	paper.install(window);  //inject into window global scope
+
+	</script>
+</head>
+
+<style>
+#myCanvas {
+	border: 2px solid red;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+/* Scale canvas with resize attribute to full size */
+canvas[resize] {
+    width: 80vw;
+    height: 90vh;
+}
+
+</style>
+
+
+<body>
+	<h1 id="headline">Hello World!</h1>
+	<canvas id="myCanvas" resize></canvas>
+
+
+</body>
+<script type="text/javascript">
+
+	window.globals = { 
+
+	}
+
+	let activeKey;
+	let prevKey = null;
+	let pressedKeys = 0;
+	let activeSound;
+	let prevSound;
+	let title = document.getElementById("headline");
+	let track;
+	let sound;
+	let keyData = {};
+	
+
+	window.onload = function(){
+		
+		keyData = {
+			a: {
+		  		src: ['trombone/long/fLong.mp3'],
+				pos: window.globals.calcPosition(1)
+			},
+			s: {
+		  		src: ['trombone/long/eLong.mp3'],
+				pos: window.globals.calcPosition(2)
+			},
+			d: {
+		  		src: ['trombone/long/eFlatLong.mp3'],
+				pos: window.globals.calcPosition(3)
+			},
+			f: {
+		  		src: ['trombone/long/dLong.mp3'],
+				pos: window.globals.calcPosition(4)
+			},
+			g: {
+		  		src: ['trombone/long/dFlatLong.mp3'],
+				pos: window.globals.calcPosition(5)
+			},
+			h: {
+		  		src: ['trombone/long/cLong.mp3'],		
+				pos: window.globals.calcPosition(6)
+			},
+			j: {
+		  		src: ['trombone/long/bLong.mp3'],  			
+				pos: window.globals.calcPosition(7)
+			}
+		}
+
+		document.addEventListener('keydown', (e) => {
+			pressedKeys++;
+			console.log("key down: " + e.key, "is repeat: " + e.repeat);
+
+				if(e.repeat) {  //on repeating/held down key
+					pressedKeys--;
+
+					if(sound.playing){
+
+						let checkEnd = sound.duration() - 0.15; //point near end for range to catch seek 
+						let currentPlace = sound.seek(); //current track seek placement
+						
+						if(currentPlace > checkEnd){ //are we getting close to end?
+							//reset seek to repeat track
+							sound.seek(0.15);
+						}
+					} 	//console.log("playing: " + sound.playing()); //is sound playing?
+				} else { //is not a held down key
+					activeKey = e.key;
+
+					if(pressedKeys > 1){
+						//prevent sound overlap
+						sound.fade(1,0,300);  
+					} 
+					//console.log(e.key);
+					// ~~~ modifier keys yet to be regulated!! ~~~
+					if(keyData[e.key]){
+
+						sound = new Howl({
+							src: keyData[e.key].src,
+							onfade: function(){
+								console.log('faded!');
+								this.stop();
+							}
+						});
+
+					} else {
+						console.log("no assigned sound");
+						console.log(activeKey);
+						return;	
+					}
+					
+					sound.play();
+					
+					//animation
+					window.globals.tween(keyData[event.key].pos);
+
+				}
+				
+				//console.log("down reported active key: " + activeKey);
+
+		});
+
+		document.addEventListener('keyup', (e) => {
+			pressedKeys--;
+			//does key up equal last active key?
+			if(e.key === activeKey){
+				sound.fade(1,0,300);
+				sound.onfade;
+			} else {
+				return;
+			}
+
+			//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
+
+		});
+
+		// title.addEventListener('click', (e) => {
+		// 	console.log("prevSound: " + prevSound, "activeSound: " + activeSound, "playing" + sound.playing());
+		// 	console.log("pressedKeys: " + pressedKeys);
+
+		// })
+
+	}
+
+
+</script>
+
+</html>

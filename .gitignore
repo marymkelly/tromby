@@ -1,0 +1,6 @@
+/node_modules
+package-lock.json
+randoOldCode.html
+.DS_Store
+/public/sounds
+/public/trombone

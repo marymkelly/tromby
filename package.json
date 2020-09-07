@@ -1,0 +1,17 @@
+{
+  "name": "tromby",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon"
+  },
+  "author": "Mary Kelly",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "howler": "^2.2.0",
+    "paper": "^0.12.11"
+  }
+}
