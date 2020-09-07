@@ -44,6 +44,17 @@
 		testing();
 	}
 
+	globals.arrowKey = function(e){
+		  if (Key.isDown('ArrowLeft')) {
+		  	console.log('arrowleft');
+		  } if (Key.isDown('ArrowRight')){
+		  	console.log('arrowright');
+		  } else {
+		  	console.log('not arrowkey');
+		  	return;
+		  }
+	}
+
 	function testing(){
 		console.log("paper says hi");
 	}
@@ -95,6 +106,10 @@ canvas[resize] {
 	let pressedKeys = 0;
 	let activeSound;
 	let prevSound;
+	let currentScreenPosition;
+	let slidePosition;
+	let partial = 0;
+	let arrowActive;
 	let title = document.getElementById("headline");
 	let track;
 	let sound;
@@ -105,43 +120,55 @@ canvas[resize] {
 		
 		keyData = {
 			a: {
-		  		src: ['trombone/long/fLong.mp3'],
-				pos: window.globals.calcPosition(1)
+		  		src: ['trombone/long/fLong.mp3', 'trombone/long/bFlatHighLong.mp3', 'trombone/long/bFlatLong.mp3'],
+				pos: window.globals.calcPosition(1),
+				num: 1
 			},
 			s: {
-		  		src: ['trombone/long/eLong.mp3'],
-				pos: window.globals.calcPosition(2)
+		  		src: ['trombone/long/eLong.mp3', 'trombone/long/aLong.mp3', 'sounds/corona.mp3'],
+				pos: window.globals.calcPosition(2),
+				num: 2
 			},
 			d: {
-		  		src: ['trombone/long/eFlatLong.mp3'],
-				pos: window.globals.calcPosition(3)
+		  		src: ['trombone/long/eFlatLong.mp3', 'trombone/long/aFlatLong.mp3', 'sounds/squiggle.mp3'],
+				pos: window.globals.calcPosition(3),
+				num: 3
 			},
 			f: {
-		  		src: ['trombone/long/dLong.mp3'],
-				pos: window.globals.calcPosition(4)
+		  		src: ['trombone/long/dLong.mp3', 'trombone/long/gLong.mp3', 'sounds/strike.mp3'],
+				pos: window.globals.calcPosition(4),
+				num: 4
 			},
 			g: {
-		  		src: ['trombone/long/dFlatLong.mp3'],
-				pos: window.globals.calcPosition(5)
+		  		src: ['trombone/long/dFlatLong.mp3', 'trombone/long/gFlatLong.mp3', 'sounds/piston1.mp3'],
+				pos: window.globals.calcPosition(5),
+				num: 5
 			},
 			h: {
-		  		src: ['trombone/long/cLong.mp3'],		
-				pos: window.globals.calcPosition(6)
+		  		src: ['trombone/long/cLong.mp3', 'trombone/long/fLong.mp3', 'sounds/prism3.mp3'],		
+				pos: window.globals.calcPosition(6),
+				num: 6
 			},
 			j: {
-		  		src: ['trombone/long/bLong.mp3'],  			
-				pos: window.globals.calcPosition(7)
+		  		src: ['trombone/long/bLong.mp3', 'trombone/long/eLong.mp3', 'sounds/dotted-spiral.mp3'],  			
+				pos: window.globals.calcPosition(7),
+				num: 7
 			}
 		}
 
 		document.addEventListener('keydown', (e) => {
 			pressedKeys++;
-			console.log("key down: " + e.key, "is repeat: " + e.repeat);
+
+			//console.log("key down: " + e.key, "is repeat: " + e.repeat);
+
+			//modifier key = invetval partials 1-3
+			//	var arrowStatus = window.globals.arrowKey(e.key);
 
 				if(e.repeat) {  //on repeating/held down key
 					pressedKeys--;
 
 					if(sound.playing){
+
 
 						let checkEnd = sound.duration() - 0.15; //point near end for range to catch seek 
 						let currentPlace = sound.seek(); //current track seek placement
@@ -154,6 +181,96 @@ canvas[resize] {
 				} else { //is not a held down key
 					activeKey = e.key;
 
+					if(activeKey === 'ArrowUp') {
+						partial = 1;
+						// arrowActive = true;
+						console.log(activeKey);
+					}
+
+
+					if(activeKey === 'ArrowDown') {
+						partial = 2;
+						// arrowActive = true;
+						console.log(activeKey);
+					}
+
+					if(activeKey === 'ArrowLeft') {
+						if(slidePosition > 1){
+						 slidePosition--;
+
+						let coorKey = getCoorespKey(slidePosition);
+						//console.log(coorkey);
+
+						sound = new Howl({
+							src: keyData[coorKey].src[partial],
+							onfade: function(){
+								console.log('faded!');
+								this.stop();
+							}
+						});
+
+						sound.play();
+						
+						 let x =  window.globals.calcPosition(slidePosition);
+						 window.globals.tween(x);
+						} else {
+							return;
+						}
+						// arrowActive = true;
+						console.log(activeKey);
+					}
+
+
+					if(activeKey === 'ArrowRight') {
+						if(slidePosition < 7){
+						 slidePosition++;
+
+						let coorKey = getCoorespKey(slidePosition);
+
+						sound = new Howl({
+							src: keyData[coorKey].src[partial],
+							onfade: function(){
+								console.log('faded!');
+								this.stop();
+							}
+						});
+
+						sound.play()
+
+						 let x =  window.globals.calcPosition(slidePosition);
+						 window.globals.tween(x);
+						} else {
+							return;
+						}
+						// arrowActive = true;
+						console.log(activeKey);
+					}
+
+					// switch(activeKey) {
+					// 	case 'ArrowLeft' : 
+					// 		console.log(activeKey);
+					// 		break;
+
+					// 	case 'ArrowRight' :
+					// 		pos = seventh * 2;
+					// 		track = "trombone/e.mp3";
+					// 		console.log(activeKey);
+					// 		break;
+
+					// 	case 'ArrowUp' :
+					// 		partial = 2;
+					// 		break;
+
+					// 	case 'ArrowDown' :
+					// 		partial = 3;
+					// 		break;
+
+					// 	default : 
+					// 		partial: 0;
+					// 		console.log("not arrow key");
+					// 	;
+					// }
+
 					if(pressedKeys > 1){
 						//prevent sound overlap
 						sound.fade(1,0,300);  
@@ -162,8 +279,25 @@ canvas[resize] {
 					// ~~~ modifier keys yet to be regulated!! ~~~
 					if(keyData[e.key]){
 
+					currentScreenPosition = keyData[e.key].pos;
+					slidePosition = keyData[e.key].num;
+
+					// var objArr = keyData[e.key];
+					// currentScreenPosition = keyData[e.key].pos;
+					// console.log(currentScreenPosition);
+					// var obj = findObjectByKey(keyData, 'pos', currentScreenPosition);
+					// console.log(obj);
+
+					// var key = "key1";
+					// var kvpair = { key: key, value: obj[key] };  
+					// // { key: "key1", value: "value1" }
+
+					// key = "bogus"
+					// var kvpair = { key: key, value: obj[key] };  
+					// // { key: "bogus", value: undefined }
+
 						sound = new Howl({
-							src: keyData[e.key].src,
+							src: keyData[e.key].src[partial],
 							onfade: function(){
 								console.log('faded!');
 								this.stop();
@@ -172,7 +306,7 @@ canvas[resize] {
 
 					} else {
 						console.log("no assigned sound");
-						console.log(activeKey);
+						//console.log(activeKey);
 						return;	
 					}
 					
@@ -190,6 +324,10 @@ canvas[resize] {
 		document.addEventListener('keyup', (e) => {
 			pressedKeys--;
 			//does key up equal last active key?
+			if(e.key === 'ArrowUp' || e.key === 'ArrowDown'){
+				arrowActive = false;
+				partial = 0;
+			}
 			if(e.key === activeKey){
 				sound.fade(1,0,300);
 				sound.onfade;
@@ -197,7 +335,7 @@ canvas[resize] {
 				return;
 			}
 
-			//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
+			console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
 
 		});
 
@@ -208,6 +346,73 @@ canvas[resize] {
 		// })
 
 	}
+
+	let slide = function(name, numPosition) {
+			this.name = name,
+			this.num = numPosition,
+			calcScreenPosition = function() {
+				return window.globals.calcPosition(this.num);
+			}
+	}
+
+
+
+	function findObjectByKey(array, key, value) {
+	    for (var i = 0; i < array.length; i++) {
+	        if (array[i][key] === value) {
+	            return array[i];
+	        }
+	    }
+	    return null;
+	}
+
+	function getCoorespKey(num){
+			switch(num) {
+			case 1 : 
+				return 'a';
+				break;
+
+			case 2 :
+				return 's';
+				break;
+
+			case 3 :
+				return 'd';
+				break;
+
+			case 4 :
+				return 'f';
+				break;
+
+			case 5 :
+				return 'g';
+				break;
+
+			case 6 :
+				return 'h';
+				break;
+
+			case 7 :
+				return 'j';
+				break;
+
+			default : 
+				console.log("not cooresponding key");
+			;
+		}
+
+	}
+
+	function callSound(l){
+		sound = new Howl({
+			src: keyData[l].src[partial],
+			onfade: function(){
+				console.log('faded!');
+				this.stop();
+			}
+		});
+	}
+
 
 
 </script>
