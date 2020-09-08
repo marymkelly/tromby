@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tromby - Trombone Simulator</title>
+	<!-- Load the Paper.js library -->
+	<script type="text/javascript" src="js/paper-full.js"></script>
+	<script type="text/javascript" src="js/howler.js"></script>
+	<!-- Define inlined PaperScript associate it with myCanvas -->
+	<script type="text/paperscript" canvas="myCanvas">
+
+	//paper/canvas variables
+	var pWidth = view.bounds.width;
+	var pHeight = view.bounds.height;
+	var midY = pHeight / 2;
+	var midX = pWidth / 2;
+
+	//shape variables
+	var width = 100;
+	var height = 100;
+	//calculate slide positions
+	var seventh = (pWidth - (width * 1.5)) / 7;
+	//rectangle for testing position
+	var rectSize = new Size(width, height);
+	var rectPoint = new Point(width , (midY - (rectSize.height/2)));
+	var trombone;
+	var slide;
+	var slSev;
+	var initSlideX; 
+
+	var rect = new Shape.Rectangle(rectPoint, rectSize);
+	rect.fillColor = 'blue';
+
+	paper.project.importSVG('/images/bell.svg', function(onload) {
+		trombone = onload;
+		
+		trombone.scale(1);
+		console.log(trombone.bounds);
+		trombone.position = new Point(pWidth/3, midY);
+
+	});
+
+	paper.project.importSVG('/images/slide.svg', function(onload) {
+		slide = onload;
+		
+		slide.scale(1);
+		console.log(slide.bounds);
+		slide.position = new Point((pWidth / 1.66), (pHeight / 1.515));
+		slSev = (slide.bounds.width / 7);
+		initSlideX = slide.position.x;
+
+	});
+
+	//console.log('paper width ' + pWidth, 'paper height' + pHeight);
+
+	globals.calcPosition = function(s){
+		return seventh * s;
+	};
+
+	globals.moveSlide = function(s){
+
+		var moveSlide = slSev * (s - 1);
+		var newSlidePos = initSlideX + moveSlide;
+
+		slide.tween({
+			'position.x': newSlidePos,
+		}, {
+			easing: 'easeInOutCubic',
+		    duration: 500
+		});
+	};
+
+	globals.tween = function(num) {
+			
+		rect.tween({
+		    'position.x': num,
+		    'fillColor.hue': '+= 90'
+		}, {
+		    easing: 'easeInOutCubic',
+		    duration: 500
+		});
+
+		console.log(slide.position, 'slSev ' + slSev);
+	}
+
+	function testing(){
+		console.log("paper says hi");
+	}
+	 
+	function onResize(event) {
+	   // Whenever the window is resized, recenter the path:
+	   //rect.position = view.center;
+	}
+
+	// console.log(paper.project._view._id); //paperScope object id
+	paper.install(window);  //inject into window global scope
+
+	</script>
+</head>
+
+<style>
+#myCanvas {
+	border: 2px solid red;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+/* Scale canvas with resize attribute to full size */
+canvas[resize] {
+/*    width: 80vw;
+    height: 90vh;*/
+
+    width: 1156px;
+    height: 529px;
+}
+
+</style>
+
+
+<body>
+	<h1 id="headline">Hello World!</h1>
+	<canvas id="myCanvas" resize></canvas>
+
+
+</body>
+<script type="text/javascript">
+
+	window.globals = { 
+
+	}
+
+	let activeKey; //most recent key down
+	let pressedKeys = 0; //track pressed keys
+	let arrowKey = 'ArrowLeft' || 'ArrowRight' || 'ArrowUp' || 'ArrowDown';
+	let activeSound;
+	let prevSound;
+	let currentScreenPosition;
+	let slidePosition;
+	let register = 0; //note ranges
+	let title = document.getElementById("headline"); //more for manual testing purposes
+	let track;
+	let sound;
+	let keyData = {};
+
+	window.onload = function(){
+
+		keyData = {
+			a: {
+		  		src: ['trombone/long/fLong.mp3', 'trombone/long/bFlatHighLong.mp3', 'trombone/long/bFlatLong.mp3'],
+				pos: window.globals.calcPosition(1),
+				num: 1
+			},
+			s: {
+		  		src: ['trombone/long/eLong.mp3', 'trombone/long/aLong.mp3', 'trombone/long/aLowLong.mp3'],
+				pos: window.globals.calcPosition(2),
+				num: 2
+			},
+			d: {
+		  		src: ['trombone/long/eFlatLong.mp3', 'trombone/long/aFlatLong.mp3', 'trombone/long/aFlatLowLong.mp3'],
+				pos: window.globals.calcPosition(3),
+				num: 3
+			},
+			f: {
+		  		src: ['trombone/long/dLong.mp3', 'trombone/long/gLong.mp3', 'trombone/long/gLowLong.mp3'],
+				pos: window.globals.calcPosition(4),
+				num: 4
+			},
+			g: {
+		  		src: ['trombone/long/dFlatLong.mp3', 'trombone/long/gFlatLong.mp3', 'trombone/long/gFlatLowLong.mp3'],
+				pos: window.globals.calcPosition(5),
+				num: 5
+			},
+			h: {
+		  		src: ['trombone/long/cLong.mp3', 'trombone/long/fLong.mp3', 'trombone/long/fLowLong.mp3'],		
+				pos: window.globals.calcPosition(6),
+				num: 6
+			},
+			j: {
+		  		src: ['trombone/long/bLong.mp3', 'trombone/long/eLong.mp3', 'trombone/long/eLowLong.mp3'],  			
+				pos: window.globals.calcPosition(7),
+				num: 7
+			}
+		}
+
+		document.addEventListener('keydown', (e) => {
+			pressedKeys++;
+			//console.log("key down: " + e.key, "is repeat: " + e.repeat);
+			//	var arrowStatus = window.globals.arrowKey(e.key);
+				if(e.repeat) {  //on repeating/held down key
+					pressedKeys--; //offset pressed key count
+					if(sound.playing){
+						needsSoundRepeat();
+					} 	//console.log("playing: " + sound.playing()); //is sound playing?
+				} else { //is not a held down key
+					activeKey = e.key;
+
+					if(activeKey === 'ArrowUp') {
+						register = 1;
+					}
+
+					if(activeKey === 'ArrowDown') {
+						register = 2;
+					}
+
+//disable slide arrow control ~~ for now
+
+					// if(activeKey === 'ArrowLeft') {
+					// 	if(slidePosition > 1){
+					// 	 slidePosition--;
+					// 	animateFromArrows()
+					// 	}
+					// }
+
+					// if(activeKey === 'ArrowRight') {
+					// 	if(slidePosition < 7){
+					// 	 slidePosition++;
+					// 	animateFromArrows();
+					// 	}
+					// 	// arrowActive = true;
+					// 	//console.log(activeKey);
+					// }
+
+					// ~~ could further tweak ~~~
+					if(pressedKeys > 1){
+						//prevent sound overlap
+						sound.fade(1,0,300);  
+					} 
+
+					//console.log(e.key, e.code); ~~ either catch capslock or tweak to compare to key code
+				
+					// ~~~ modifier keys yet to be regulated!! ~~~
+					if(keyData[e.key]){
+
+					currentScreenPosition = keyData[e.key].pos;
+					slidePosition = keyData[e.key].num;  //update to new obj
+
+						sound = new Howl({
+							src: keyData[e.key].src[register],
+							onfade: function(){
+								console.log('faded!');
+								this.stop();
+							}
+						});
+
+					} else {
+						console.log("no assigned sound");
+						//console.log(activeKey);
+						return;	
+					}
+					
+					sound.play();
+					
+					//animation
+					window.globals.tween(keyData[event.key].pos);
+
+					//slide animation
+					window.globals.moveSlide(keyData[event.key].num);
+
+				}
+				
+				//console.log("down reported active key: " + activeKey);
+
+		});
+
+		document.addEventListener('keyup', (e) => {
+			pressedKeys--;
+			//does key up equal last active key?
+			if(e.key === 'ArrowUp' || e.key === 'ArrowDown'){
+				//arrowActive = false;
+				register = 0;
+			}
+
+			//disable left/right arrow keys for now
+			// if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+			// 	//arrowActive = false;
+			// 	sound.fade(1,0,300);
+			// 	sound.onfade;
+			// }
+
+			if(e.key === activeKey){
+				sound.fade(1,0,300);
+				sound.onfade;
+			} else {
+				return;
+			}
+
+			//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
+
+		});
+	}
+
+	function getCoorespKey(num){
+			switch(num) {
+			case 1 : 
+				return 'a';
+				break;
+
+			case 2 :
+				return 's';
+				break;
+
+			case 3 :
+				return 'd';
+				break;
+
+			case 4 :
+				return 'f';
+				break;
+
+			case 5 :
+				return 'g';
+				break;
+
+			case 6 :
+				return 'h';
+				break;
+
+			case 7 :
+				return 'j';
+				break;
+
+			default : 
+				console.log("not cooresponding key");
+			;
+		}
+
+	}
+
+	// move slide by left and right arrows ~~ later feature fix
+	// function animateFromArrows(){
+
+	// 	let coorKey = getCoorespKey(slidePosition);
+
+	// 	sound = new Howl({
+	// 		src: keyData[coorKey].src[register],
+	// 		onfade: function(){
+	// 			console.log('faded!');
+	// 			this.stop();
+	// 		}
+	// 	});
+
+	// 	sound.play();
+
+	// 	let x =  window.globals.calcPosition(slidePosition);
+	// 	window.globals.tween(x);
+	// }
+
+	function needsSoundRepeat(){
+		let checkEnd = sound.duration() - 0.15; //point near end for range to catch seek 
+		let currentPlace = sound.seek(); //current track seek placement
+		if(currentPlace > checkEnd){ //are we getting close to end?
+			//reset seek to repeat track
+			sound.seek(0.15);
+		}
+	}
+
+
+
+</script>
+
+</html>

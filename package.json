@@ -10,8 +10,10 @@
   "author": "Mary Kelly",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^3.1.5",
     "express": "^4.17.1",
     "howler": "^2.2.0",
-    "paper": "^0.12.11"
+    "paper": "^0.12.11",
+    "path": "^0.12.7"
   }
 }
