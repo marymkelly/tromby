@@ -34,7 +34,7 @@
 		trombone = onload;
 		
 		trombone.scale(1);
-		console.log(trombone.bounds);
+		//console.log(trombone.bounds);
 		trombone.position = new Point(pWidth/3, midY);
 
 	});
@@ -43,7 +43,7 @@
 		slide = onload;
 		
 		slide.scale(1);
-		console.log(slide.bounds);
+		//console.log(slide.bounds);
 		slide.position = new Point((pWidth / 1.66), (pHeight / 1.515));
 		slSev = (slide.bounds.width / 7);
 		initSlideX = slide.position.x;
@@ -65,7 +65,7 @@
 			'position.x': newSlidePos,
 		}, {
 			easing: 'easeInOutCubic',
-		    duration: 500
+		    duration: 200
 		});
 	};
 
@@ -76,10 +76,10 @@
 		    'fillColor.hue': '+= 90'
 		}, {
 		    easing: 'easeInOutCubic',
-		    duration: 500
+		    duration: 200
 		});
 
-		console.log(slide.position, 'slSev ' + slSev);
+		//console.log(slide.position, 'slSev ' + slSev);
 	}
 
 	function testing(){
@@ -177,6 +177,8 @@ canvas[resize] {
 
 		document.addEventListener('keydown', (e) => {
 			keyed = e.code;
+			// console.log(e.getModifierState('Alt'));
+			// console.log(e.getModifierState('Meta'));
 
 				if(e.repeat && activeKey) {  		//on held down sound key, check to repeat sound
 					needsSoundRepeat();
@@ -188,9 +190,8 @@ canvas[resize] {
 							playSound(activeKey);
 							return;
 					}
-				
-					// ~~~ modifier keys yet to be regulated!! ~~~
-					if(keyData[keyed]){
+			
+					if(keyData[keyed] && (!e.getModifierState('Meta'))){
 						activeKey = keyed; //active sound key
 						soundKeys++; //pressed sound key count
 						if(soundKeys > 1){   //prevent sound overlap
@@ -224,7 +225,6 @@ canvas[resize] {
 			if(released === activeKey){
 				soundKeys--;
 				sound.fade(1,0,300);
-				console.log("ACTIVE KEY RELEASED " + activeKey);
 				activeKey = null;
 				return;
 
