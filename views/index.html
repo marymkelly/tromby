@@ -14,41 +14,113 @@
 	var midY = pHeight / 2;
 	var midX = pWidth / 2;
 
+	var pSeventh = ((pWidth - 250) / 7);
 	//shape variables
 	var width = 100;
 	var height = 100;
 	//calculate slide positions
-	var seventh = (pWidth - (width * 1.5)) / 7;
+	var seventh = (pWidth - (width * 1.5)) / 7; 
 	//rectangle for testing position
 	var rectSize = new Size(width, height);
 	var rectPoint = new Point(width , (midY - (rectSize.height/2)));
+
+	//trombone vars
 	var trombone;
 	var slide;
-	var slSev;
-	var initSlideX; 
+	var slSvgSev;
+	var initSlideX; //386.6667 center X of slide
+	var maxSlideX; //1586.2 max point for center X of slide
+	var offset; // // 140 from the right side of canvas 
+	var slideSeventh; // equal division of 7 parts //100.07 each
+
+	//slide svg relative ~ not canvas
+	var topSlide; //initSlideX - offset; // 245 - static // top of slide and left bound of animation
+	var bottomSlide; // 1085 - static
+	var leftSlSvg; // ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg 
+	var rightSlSvg; // ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg 
+
 
 	var rect = new Shape.Rectangle(rectPoint, rectSize);
 	rect.fillColor = 'blue';
 
-	paper.project.importSVG('/images/bell.svg', function(onload) {
+	paper.project.importSVG('/images/belltb.svg', function(onload) { //background trombone image
 		trombone = onload;
-		
+	
 		trombone.scale(1);
-		//console.log(trombone.bounds);
-		trombone.position = new Point(pWidth/3, midY);
-
+		trombone.position = new Point((pWidth / 3), midY);
 	});
 
-	paper.project.importSVG('/images/slide.svg', function(onload) {
+	paper.project.importSVG('/images/slidetb.svg', function(onload) { //animated trombone slide
 		slide = onload;
 		
 		slide.scale(1);
-		//console.log(slide.bounds);
-		slide.position = new Point((pWidth / 1.66), (pHeight / 1.515));
-		slSev = (slide.bounds.width / 7);
+		console.log(slide.bounds);
+		slide.position = new Point((pWidth / 3), midY); 
+
+		slSvgSev = (slide.bounds.width / 7); // for calculating max center X
 		initSlideX = slide.position.x;
+		maxSlideX = initSlideX + (slide.bounds.width - slSvgSev); //supposed to be max center X
+
+		leftSlSvg = ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg 
+		rightSlSvg = ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg
+		offset = (pWidth - (slide.bounds.width - (pWidth / 3))); //from right side of canvas 
+		topSlide = initSlideX - offset; // 245 - static
+		bottomSlide = rightSlSvg; // 1085
+		slideSeventh = (bottomSlide - initSlideX) / 7; //might be off: (topSlide - bottomSlide), if so
+
+		slide.strokeColor = "purple";
+		slide.strokeWidth = 2;
 
 	});
+
+
+	var myPath;
+
+
+	function onMouseDown(event) {
+		myPath = new Path();
+		myPath.strokeColor = 'black';
+		//offset = event.point.x -minLeftSlideX +=;
+		console.log("mousey");
+
+	}
+
+	function onMouseDrag(event) {
+		myPath.add(event.point);
+		rect.position.x = event.point.x;
+
+		console.log(slide.bounds);
+
+		//max and min slide range
+		if(event.point.x >= (topSlide) && event.point.x <= (bottomSlide - offset)){
+			//slide.position.x = (event.point.x + (slide.bounds.width/2)) - 4;
+			slide.position.x = event.point.x + 125;
+			
+
+			//slide.position.x += (event.point.x - (slide.bounds.width/2));
+			
+			//rect.position.x = (event.point.x + minLeftSlideX);
+			//slide.position.x = (event.point.x + (slide.bounds.width/2)) - 4;
+
+
+		//slide.position.x = slide.position.x + event.delta.length;
+		myPath.strokeColor = 'green';
+	} else {
+				myPath.strokeColor = "black";
+	}
+		console.log(event.point.x);
+		console.log("bott left" + slide.bounds.bottomLeft.x);
+
+	}
+
+	function onMouseUp(event) {
+		// var myCircle = new Path.Circle({
+		// 	center: event.point,
+		// 	radius: 10
+		// });
+		// myCircle.strokeColor = 'black';
+		// myCircle.fillColor = 'white';
+	}
 
 	//console.log('paper width ' + pWidth, 'paper height' + pHeight);
 
@@ -67,6 +139,8 @@
 			easing: 'easeInOutCubic',
 		    duration: 200
 		});
+
+		console.log("newX " + newSlidePos);
 	};
 
 	globals.tween = function(num) {
@@ -109,11 +183,11 @@ body {
 
 /* Scale canvas with resize attribute to full size */
 canvas[resize] {
-/*    width: 80vw;
-    height: 90vh;*/
+    width: 80vw;
+    height: 90vh;
 
-    width: 1156px;
-    height: 529px;
+/*    width: 1156px;
+    height: 529px;*/
 }
 
 </style>
@@ -133,7 +207,7 @@ canvas[resize] {
 	let soundKeys = 0; //track pressed sound keys 
 	let sound;
 	let register = 0; //note ranges
-	let keyData = {}
+	let keyData = {};
 
 	window.onload = function(){
 
@@ -175,10 +249,21 @@ canvas[resize] {
 			}
 		}
 
+		function mousy() {
+			paper.onMouseDown();
+		}
+
+		var title = document.getElementById("headline"); 
+
+		title.addEventListener('click', () => {
+			console.log("hey");
+			mousy();
+		}) 
+	
+
+
 		document.addEventListener('keydown', (e) => {
 			keyed = e.code;
-			// console.log(e.getModifierState('Alt'));
-			// console.log(e.getModifierState('Meta'));
 
 				if(e.repeat && activeKey) {  		//on held down sound key, check to repeat sound
 					needsSoundRepeat();
