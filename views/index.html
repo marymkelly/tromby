@@ -66,7 +66,7 @@
 		offset = (pWidth - (slide.bounds.width - (pWidth / 3))); //from right side of canvas 
 		topSlide = initSlideX - offset; // 245 - static
 		bottomSlide = rightSlSvg; // 1085
-		slideSeventh = (bottomSlide - initSlideX) / 7; //might be off: (topSlide - bottomSlide), if so
+		slideSeventh = (bottomSlide - topSlide) / 7; 
 
 		slide.strokeColor = "purple";
 		slide.strokeWidth = 2;
@@ -79,8 +79,16 @@
 
 	function onMouseDown(event) {
 		myPath = new Path();
-		myPath.strokeColor = 'black';
+		//myPath.strokeColor = 'black';
 		//offset = event.point.x -minLeftSlideX +=;
+
+		if(event.point.x >= (topSlide) && event.point.x <= (bottomSlide - offset)){
+			if(event.point.x <= (topSlide + 20)) {
+				slide.position.x = event.point.x + 125;
+			} else {
+				slide.position.x = event.point.x + 105;
+			}
+		}
 		console.log("mousey");
 
 	}
@@ -93,10 +101,17 @@
 
 		//max and min slide range
 		if(event.point.x >= (topSlide) && event.point.x <= (bottomSlide - offset)){
-			//slide.position.x = (event.point.x + (slide.bounds.width/2)) - 4;
-			slide.position.x = event.point.x + 125;
-			
 
+			if(event.point.x <= (topSlide + 20)) {
+				slide.position.x = event.point.x + 125;
+			} else {
+				if(event.point.x >= (bottomSlide - (offset + 20))){
+					slide.position.x = event.point.x + 115;
+				}else {
+					slide.position.x = event.point.x + 105;
+				}
+			}
+		
 			//slide.position.x += (event.point.x - (slide.bounds.width/2));
 			
 			//rect.position.x = (event.point.x + minLeftSlideX);
@@ -104,9 +119,9 @@
 
 
 		//slide.position.x = slide.position.x + event.delta.length;
-		myPath.strokeColor = 'green';
+		// myPath.strokeColor = 'green';
 	} else {
-				myPath.strokeColor = "black";
+		// myPath.strokeColor = "black";
 	}
 		console.log(event.point.x);
 		console.log("bott left" + slide.bounds.bottomLeft.x);
@@ -130,7 +145,7 @@
 
 	globals.moveSlide = function(s){
 
-		var moveSlide = slSev * (s - 1);
+		var moveSlide = (slSvgSev * (s - 1))/1.77;
 		var newSlidePos = initSlideX + moveSlide;
 
 		slide.tween({
@@ -141,6 +156,7 @@
 		});
 
 		console.log("newX " + newSlidePos);
+		console.log(slideSeventh);
 	};
 
 	globals.tween = function(num) {
@@ -208,6 +224,8 @@ canvas[resize] {
 	let sound;
 	let register = 0; //note ranges
 	let keyData = {};
+	let sliding; //sliding mouse
+	//let activeSound = false; //active sound if mousedown
 
 	window.onload = function(){
 
@@ -249,22 +267,125 @@ canvas[resize] {
 			}
 		}
 
-		function mousy() {
-			paper.onMouseDown();
-		}
+		document.addEventListener('mousedown', (e) => {
+			sliding = true;
+			// console.log('x ' + e.offsetX, 'y ' + e.offsetY);
+			console.log("mousedown");
 
-		var title = document.getElementById("headline"); 
+			if(e.offsetX > 250 && e.offsetX < 970){
+			if(soundKeys === 0 && sliding){
+				
+					if(e.offsetX <= 365){
+						activeKey = 'KeyA';
+					}else
+				
+					if(e.offsetX <= 480){
+						activeKey = 'KeyS';
+					} else
 
-		title.addEventListener('click', () => {
-			console.log("hey");
-			mousy();
-		}) 
+					if(e.offsetX <= 595){
+						activeKey = 'KeyD';
+					} else
+
+					if(e.offsetX <= 710){
+						activeKey = 'KeyF';
+					} else
+
+					if(e.offsetX <= 825){
+						activeKey = 'KeyG';
+					} else
+
+					if(e.offsetX <= 940){
+						activeKey = 'KeyH';
+					} else
+
+					if(e.offsetX > 940 && e.offsetX <= 970 ){
+						activeKey = 'KeyJ';
+					} 
+					playSound(activeKey);
+					soundKeys++;
+					return;
+			
+			} else {
+				console.log("mouse down sliding " + sliding);
+				console.log(soundKeys);
+				return;
+			}
+		}//offset
+		})
+
+		document.addEventListener('mousemove', (e) => {
+			let coorKey; //'key' change
+
+			if(e.offsetX > 250 && e.offsetX < 960){
+			if(sliding){
+					if(e.offsetX <= 365){
+						coorKey = 'KeyA';
+					}else
+				
+					if(e.offsetX <= 480){
+						coorKey = 'KeyS';
+					} else
+
+					if(e.offsetX <= 595){
+						coorKey = 'KeyD';
+					} else
+
+					if(e.offsetX <= 710){
+						coorKey = 'KeyF';
+					} else
+
+					if(e.offsetX <= 825){
+						coorKey = 'KeyG';
+					} else
+
+					if(e.offsetX <= 940){
+						coorKey = 'KeyH';
+					} else
+
+					if(e.offsetX > 940 ){
+						coorKey = 'KeyJ';
+					} 
+
+					if(coorKey != activeKey){
+						sound.fade(1,0,200);
+						playSound(coorKey);
+						activeKey = coorKey; 
+					}
+
+					console.log('x ' + e.offsetX, 'y ' + e.offsetY);
+					console.log("mousemove");
+					return;
+
+			}else {
+				//if not sliding
+				console.log("mousemove not sliding " + sliding);
+				return;
+
+			}
+			}
+		})
+
+		document.addEventListener('mouseup', (e) => {
+			soundKeys--;
+			sliding = false;
+			console.log("mouseup");
+			sound.fade(1,0,200);
+			console.log("sliding: " + sliding);
+			console.log("sound.playing mouseup " + sound.playing());
+			activeKey = null;
+			coorKey = null;
+			return;
+		})
+
+
 	
 
 
 		document.addEventListener('keydown', (e) => {
 			keyed = e.code;
 
+			
 				if(e.repeat && activeKey) {  		//on held down sound key, check to repeat sound
 					needsSoundRepeat();
 				} else { 							//new key 							
@@ -276,7 +397,7 @@ canvas[resize] {
 							return;
 					}
 			
-					if(keyData[keyed] && (!e.getModifierState('Meta'))){
+					if(keyData[keyed] && (!e.getModifierState('Meta')) && sliding === false){
 						activeKey = keyed; //active sound key
 						soundKeys++; //pressed sound key count
 						if(soundKeys > 1){   //prevent sound overlap
@@ -307,7 +428,7 @@ canvas[resize] {
 				return;
 			}
 
-			if(released === activeKey){
+			if(released === activeKey && sliding === false){
 				soundKeys--;
 				sound.fade(1,0,300);
 				activeKey = null;
