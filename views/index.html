@@ -50,6 +50,7 @@
 	
 		trombone.bounds.width;
 		trombone.position = new Point((pWidth / 3), midY);
+		// trombone.position = new Point(386.67, midY);
 	});
 
 	paper.project.importSVG('/images/slidetb.svg', function(onload) { //animated trombone slide
@@ -58,6 +59,7 @@
 		slide.scale(1,1);
 		//console.log(slide.bounds);
 		slide.position = new Point((pWidth / 3), midY); 
+		// slide.position = new Point(386.67, midY); 
 
 		slSvgSev = (slide.bounds.width / 7); // for calculating max center X
 		initSlideX = slide.position.x;
@@ -70,6 +72,7 @@
 		bottomSlide = rightSlSvg; // 1085
 		slideSeventh = (bottomSlide - topSlide) / 7; 
 
+		console.log("initSlideX" + initSlideX);
 		//slide.strokeColor = "purple";
 		//slide.strokeWidth = 2;
 
@@ -135,7 +138,7 @@
 		console.log(slideSeventh);
 	};
 
-	globals.tween = function(num) {
+	globals.tween = function(num) { //remove later
 			
 		rect.tween({
 		    'position.x': num,
@@ -158,7 +161,6 @@
 		}
 	}
 
-
 	// console.log(paper.project._view._id); //paperScope object id
 	paper.install(window);  //inject into window global scope
 
@@ -179,8 +181,8 @@ body {
 canvas[resize] {
     width: 80vw;
     height: 90vh;
-
-/*    width: 1156px;
+/*
+    width: 1156px;
     height: 529px;*/
 }
 
@@ -205,9 +207,7 @@ canvas[resize] {
 	let sliding = false; //sliding mouse
 	let coorKey; //corresponding 'key' 
 	let activeSound = false; //active sound if mousedown
-	let isKeyPress;
-	let keyvent;
-	let mousevent; 
+	let isKeyPress; 
 	let initCount = 0; 
 	let mouseUp;
 	let keyDown
@@ -217,46 +217,41 @@ canvas[resize] {
 
 		keyData = {
 			KeyA: {
-		  		src: ['trombone/long/fLong.mp3', 'trombone/long/bFlatHighLong.mp3', 'trombone/long/bFlatLong.mp3'],
+		  		src: [{note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'B Flat', track: 'trombone/long/bFlatHighLong.mp3'},{note: 'B Flat', track: 'trombone/long/bFlatLong.mp3'}],
 				pos: window.globals.calcPosition(1),
 				num: 1
 			},
 			KeyS: {
-		  		src: ['trombone/long/eLong.mp3', 'trombone/long/aLong.mp3', 'trombone/long/aLowLong.mp3'],
+		  		src: [{note: 'E' , track: 'trombone/long/eLong.mp3'}, {note: 'A', track: 'trombone/long/aLong.mp3'}, {note: 'A', track: 'trombone/long/aLowLong.mp3'}],
 				pos: window.globals.calcPosition(2),
 				num: 2
 			},
 			KeyD: {
-		  		src: ['trombone/long/eFlatLong.mp3', 'trombone/long/aFlatLong.mp3', 'trombone/long/aFlatLowLong.mp3'],
+		  		src: [{note: 'E Flat', track: 'trombone/long/eFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLowLong.mp3'}],
 				pos: window.globals.calcPosition(3),
 				num: 3
 			},
 			KeyF: {
-		  		src: ['trombone/long/dLong.mp3', 'trombone/long/gLong.mp3', 'trombone/long/gLowLong.mp3'],
+		  		src: [{note: 'D', track: 'trombone/long/dLong.mp3'}, {note: 'G', track: 'trombone/long/gLong.mp3'}, {note: 'G', track: 'trombone/long/gLowLong.mp3'}],
 				pos: window.globals.calcPosition(4),
 				num: 4
 			},
 			KeyG: {
-		  		src: ['trombone/long/dFlatLong.mp3', 'trombone/long/gFlatLong.mp3', 'trombone/long/gFlatLowLong.mp3'],
+		  		src: [{note: 'D Flat', track: 'trombone/long/dFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLowLong.mp3'}],
 				pos: window.globals.calcPosition(5),
 				num: 5
 			},
 			KeyH: {
-		  		src: ['trombone/long/cLong.mp3', 'trombone/long/fLong.mp3', 'trombone/long/fLowLong.mp3'],		
+		  		src: [{note: 'C', track: 'trombone/long/cLong.mp3'}, {note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'F', track: 'trombone/long/fLowLong.mp3'}],		
 				pos: window.globals.calcPosition(6),
 				num: 6
 			},
 			KeyJ: {
-		  		src: ['trombone/long/bLong.mp3', 'trombone/long/eLong.mp3', 'trombone/long/eLowLong.mp3'],  			
+		  		src: [{note: 'B', track: 'trombone/long/bLong.mp3'}, {note: 'E', track: 'trombone/long/eLong.mp3'}, {note: 'E', track: 'trombone/long/eLowLong.mp3'}],  			
 				pos: window.globals.calcPosition(7),
 				num: 7
 			}
-		}
-
-		if(Event.NONE){
-			console.log("FUCKING A THIS");
-		}
-	
+		}	
 
 		document.addEventListener('mousedown', (e) => {
 			// mousevent = true;
@@ -320,42 +315,7 @@ canvas[resize] {
 			//}
 		})
 
-		function getKey(num){
-
-			let key;
-
-			if(num > 250 && num <= 365){
-				key = 'KeyA';
-			}else
 		
-			if(num <= 480){
-				key = 'KeyS';
-			} else
-
-			if(num <= 595){
-				key = 'KeyD';
-			} else
-
-			if(num <= 710){
-				key = 'KeyF';
-			} else
-
-			if(num <= 825){
-				key = 'KeyG';
-			} else
-
-			if(num <= 925){
-				key = 'KeyH';
-			} else
-
-			if(num > 925 && num < 970){
-				key = 'KeyJ';
-			} 
-
-			return key;	
-
-		}
-
 		mouseUp = document.addEventListener('mouseup', callMouseUp);
 
 		keyDown = document.addEventListener('keydown', callKeyDown);
@@ -390,88 +350,117 @@ canvas[resize] {
 				return;
 			}
 
-			//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
-		});
+				//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
+			});
 	} //end window.onload
 
 
 	var title = document.getElementById("headline");
 
 	title.addEventListener("click", (e) => {
-		console.log("fucker");
-		console.log("ePhase" + event.eventPhase);
-		console.log("e" + e.eventPhase);
 		checkStatus();
-
-
-		//console.log(mouseUp.eventPhase);
 	})
 
-	function playSound(key) {  //play sound
-		sound = new Howl({
-			src: keyData[key].src[register],
-			onfade: function(){
-				this.stop();
-			}
-		});
-		sound.play();
-	}
+
 
 	function callKeyDown(e){
 		keyed = e.code;
 
-				if(e.repeat && activeKey) {  		//on held down sound key, check to repeat sound
-						needsSoundRepeat();
-						console.log("I am after the repeat");
+			if(e.repeat && activeKey) {  		//on held down sound key, check to repeat sound
+					needsSoundRepeat();
+					console.log("I am after the repeat");
 
-				} else { 							//new key 							
+			} else { 							//new key 							
 
-					if((keyed === 'ArrowUp' || keyed === 'ArrowDown') && (activeKey)) { //to change note range 
-							getRegister(keyed);
-							sound.fade(1,0,300);
-							playSound(activeKey);
-							return;
-					}
-			
-					if(keyData[keyed] && (!e.getModifierState('Meta')) && !sliding){
-						activeKey = keyed; //active sound key
-						soundKeys++; //pressed sound key count
-						if(soundKeys > 1){   //prevent sound overlap
-							soundKeys--;
-							sound.fade(1,0,300);  
-						} 
-
-						playSound(activeKey);
-						//square animation
-						//window.globals.tween(keyData[activeKey].pos);
-						//slide animation
-						window.globals.moveSlide(keyData[activeKey].num);
-						return;
-					} else {
-						
-						if(keyed === 'ArrowUp' || keyed === 'ArrowDown'){
+				if((keyed === 'ArrowUp' || keyed === 'ArrowDown') && (activeKey)) { //to change note range 
 						getRegister(keyed);
-						console.log("press arrow 5" + register);
-						}
-						//console.log("no assigned sound");
-						console.log("active key arrow pressed" + activeKey);
-						console.log("active sound" + activeSound);
-						return;	
-					}
-				}	
+						sound.fade(1,0,300);
+						playSound(activeKey);
+						return;
+				}
+		
+				if(keyData[keyed] && (!e.getModifierState('Meta')) && !sliding){
+					activeKey = keyed; //active sound key
+					soundKeys++; //pressed sound key count
+					if(soundKeys > 1){   //prevent sound overlap
+						soundKeys--;
+						sound.fade(1,0,300);  
+					} 
 
-				//console.log("down reported active key: " + activeKey);
+					playSound(activeKey);
+					//square animation
+					//window.globals.tween(keyData[activeKey].pos);
+
+					//slide animation
+					window.globals.moveSlide(keyData[activeKey].num);
+					return;
+				} else {
+					
+					if(keyed === 'ArrowUp' || keyed === 'ArrowDown'){
+					getRegister(keyed);
+					console.log("press arrow 5" + register);
+					}
+					//console.log("no assigned sound");
+					console.log("active key arrow pressed" + activeKey);
+					console.log("active sound" + activeSound);
+					return;	
+				}
+			}	
+
+			//console.log("down reported active key: " + activeKey);
 
 	}
 
-	function checkStatus() {
+	function checkStatus() { 
 
-		if(!sliding && soundKeys === 0){
+		if(!sliding && soundKeys === 0){  //fix this - need cancel if 
 				var intervalID = setTimeout(() => { restoreSlide('one', 'two'); }, 3000);
-		}
+		} 
 		return;
 
 	}
+
+	function getKey(num){
+
+		let key;
+
+		if(num > 250 && num <= 365){
+			key = 'KeyA';
+		}else
+	
+		if(num <= 480){
+			key = 'KeyS';
+		} else
+
+		if(num <= 595){
+			key = 'KeyD';
+		} else
+
+		if(num <= 710){
+			key = 'KeyF';
+		} else
+
+		if(num <= 825){
+			key = 'KeyG';
+		} else
+
+		if(num <= 925){
+			key = 'KeyH';
+		} else
+
+		if(num > 925 && num < 970){
+			key = 'KeyJ';
+		} 
+
+		return key;	
+
+	}
+
+
+	function getRegister(selected){  //change note range (high or low)
+			(selected === 'ArrowUp') ? register = 1 : register = 2;
+	}
+
 
 	function restoreSlide(){
 		window.globals.backToFirst();
@@ -479,7 +468,7 @@ canvas[resize] {
 
 
 	function clearAlert() {
-	  window.clearTimeout(timeoutID);
+		window.clearTimeout(timeoutID);
 	}
 
 	function callMouseUp(e) {
@@ -498,8 +487,14 @@ canvas[resize] {
 		return;
 	}
 
-	function getRegister(selected){  //change note range (high or low)
-			(selected === 'ArrowUp') ? register = 1 : register = 2;
+	function playSound(key) {  //play sound
+		sound = new Howl({
+			src: keyData[key].src[register].track,
+			onfade: function(){
+				this.stop();
+			}
+		});
+		sound.play();
 	}
 
 	function needsSoundRepeat(){   //checks to see if getting close to sound track end to reset it with minimal lag
