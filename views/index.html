@@ -158,81 +158,6 @@
 		}
 	}
 
-	function onFrame(event) {
-    // the number of times the frame event was fired:
-    // console.log(event.count);
- 
-    // The total amount of time passed since
-    // the first frame event in seconds:
-    //console.log(event.time);
- 
-    // The time passed in seconds since the last frame event:
-    // console.log(event.delta);
-}
-
-
-	// function testing(w, h){
-	// 	console.log("paper says hi");
-	// 	// slide.bounds.width = rW;
-	// 	// slide.bounds.height = rH;
-		
-	// 	var w; 
-	// 	var h; 
-	// 	// trombone.bounds.width = rW;
-	// 	// trombone.bounds.height = rH;
-
-	// 	// trombone.position = view.center;
-	// 	// slide.postion = view.center;
-
-	// 	var trb = trombone;
-	// 	var sld = slide;
-
-	// 	console.log("width " + w, "height" + h);
-
-	// 	var wRsz = w * 1401;
-	// 	var hRsz = h * 490;
-
-	// 	console.log("wResize " + wRsz, "hResize" + hRsz);
-	// 	console.log("midX " + midX, "midY" + midY);
-
-	// 	trb.bounds.width = wRsz; 
-	// 	sld.bounds.width = wRsz;
-
-	// 	console.log('bounds' + trb.bounds.width);
-
-	// 	//var trbP = trb.position = new Point((pWidth / 3), midY);
-
-	// 	trb.position = new Point((pWidth / 3), midY);
-	// 	sld.position = new Point((pWidth / 3), midY);
-
-	// }
-	 
-	// function onResize(event) {
-	//    // Whenever the window is resized, recenter the path:
-	//    //rect.position = view.center;
-	//    //console.log(view.bounds.width)
-	//    	//testing();
-	//    	pWidth = view.bounds.width;
-	// 	pHeight = view.bounds.height;
-	// 	midY = pHeight / 2;
-
-	//   	var rSvgW = 1.2 * (view.bounds.width / 1401); //width scale
-	//   	var rSvgH = 1.58 * (view.bounds.height / 490); //height scale
-
-	//   	testing(rSvgW, rSvgH);
-       
- //  // //      trombone.position.x = view.bounds.width;
-	//  // //   slide.position.x = view.bounds.width;
-	//  // //   	// trombone.scale(1);
- //  // //  		// slide.scale(1);
- //  // //  		//paper.project.removeChilden();
-
- //  //  		var svgResize = paper.project.importSVG('/images/belltb.svg') { //background trombone image
-	// 	// 	trombone.bounds.width = rSvgW;
-	// 	// 	trombone.position = new Point((pWidth / 3), midY);
-	// 	// };
-
-	// }
 
 	// console.log(paper.project._view._id); //paperScope object id
 	paper.install(window);  //inject into window global scope
@@ -540,12 +465,7 @@ canvas[resize] {
 	}
 
 	function checkStatus() {
-		// console.log("dMPhase" + window.document.onmouseup);
-		// console.log("dMPhase" + window.document.onmousemove);
-		// console.log("dMPhase" + window.document.onkeyup);
-		// console.log("aKey" + activeKey);
-		// console.log("sKeys" + soundKeys);
-		// console.log("slding" + sliding);
+
 		if(!sliding && soundKeys === 0){
 				var intervalID = setTimeout(() => { restoreSlide('one', 'two'); }, 3000);
 		}
@@ -553,19 +473,10 @@ canvas[resize] {
 
 	}
 
-	function restoreSlide(notpos1, notactivemoving){
-		console.log("slide to move");
+	function restoreSlide(){
 		window.globals.backToFirst();
 	}
 
-
-
-
-	//var timeoutID;
-
-	// function delayedAlert() {
-	//   timeoutID = window.setTimeout(window.alert, 2*1000, 'That was really slow!');
-	// }
 
 	function clearAlert() {
 	  window.clearTimeout(timeoutID);
