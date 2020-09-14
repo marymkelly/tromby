@@ -9,7 +9,7 @@
 	<script type="text/paperscript" canvas="myCanvas">
 
 	//paper/canvas variables
-	var pWidth = view.bounds.width;
+	var pWidth = view.bounds.width; 
 	var pHeight = view.bounds.height;
 	var midY = pHeight / 2;
 	var midX = pWidth / 2;
@@ -19,7 +19,7 @@
 	var width = 100;
 	var height = 100;
 	//calculate slide positions
-	var seventh = (pWidth - (width * 1.5)) / 7; 
+	//var seventh = (pWidth - (width * 1.5)) / 7; //143
 	//rectangle for testing position
 	var rectSize = new Size(width, height);
 	var rectPoint = new Point(width , (midY - (rectSize.height/2)));
@@ -39,8 +39,8 @@
 	var leftSlSvg; // ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg 
 	var rightSlSvg; // ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg 
 
-	var propoX = 1401 /pWidth;
-	var propoY = 490 / pHeight;
+	// var propoX = 1401 /pWidth;
+	// var propoY = 490 / pHeight;
 
 	var rect = new Shape.Rectangle(rectPoint, rectSize);
 	//rect.fillColor = 'blue';
@@ -56,13 +56,13 @@
 	paper.project.importSVG('/images/slidetb.svg', function(onload) { //animated trombone slide
 		slide = onload;
 		
-		slide.scale(1,1);
+		//slide.scale(1,1);
 		//console.log(slide.bounds);
 		slide.position = new Point((pWidth / 3), midY); 
 		// slide.position = new Point(386.67, midY); 
 
 		slSvgSev = (slide.bounds.width / 7); // for calculating max center X
-		initSlideX = slide.position.x;
+		initSlideX = slide.position.x; 
 		maxSlideX = initSlideX + (slide.bounds.width - slSvgSev); //supposed to be max center X
 
 		leftSlSvg = ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg 
@@ -70,42 +70,25 @@
 		offset = (pWidth - (slide.bounds.width - (pWidth / 3))); //from right side of canvas 
 		topSlide = initSlideX - offset; // 245 - static
 		bottomSlide = rightSlSvg; // 1085
-		slideSeventh = (bottomSlide - topSlide) / 7; 
+		slideSeventh = (bottomSlide - topSlide) / 7; //120
 
-		console.log("initSlideX" + initSlideX);
+		// console.log("initSlideX" + initSlideX); //385
 		//slide.strokeColor = "purple";
 		//slide.strokeWidth = 2;
 
-		console.log("pW " + pWidth + "pH " + pHeight + "sl " + slide.bounds); 
+		// console.log("pW " + pWidth + "pH " + pHeight + "sl " + slide.bounds); 
 
 	});
 
 	var myPath;
 
 	function onMouseDown(event) {
-		myPath = new Path();
-		//myPath.strokeColor = 'black';
-
-		if(event.point.x >= (topSlide) && event.point.x <= (bottomSlide - offset)){
-			if(event.point.x <= (topSlide + 20)) {
-				slide.position.x = event.point.x + 125;
-			} else {
-				slide.position.x = event.point.x + 105;
-			}
-		}
-		console.log("mousey");
+		globals.mouseDraggery(event);
 
 	}
 
-	function onMouseDrag(event) {
-		myPath.add(event.point);
-		rect.position.x = event.point.x;
-
-		console.log(slide.bounds);
-
-		//max and min slide range
-		if(event.point.x >= (topSlide) && event.point.x <= (bottomSlide - offset)){
-
+	globals.mouseDraggery = function(event) {
+		if(event.point.x >= (topSlide) && event.point.x <= (bottomSlide - offset)){ //max and min slide range
 			if(event.point.x <= (topSlide + 20)) {
 				slide.position.x = event.point.x + 125;
 			}else if(event.point.x >= (bottomSlide - (offset + 20))){
@@ -116,15 +99,18 @@
 		}
 	}
 
-	//console.log('paper width ' + pWidth, 'paper height' + pHeight);
 
-	globals.calcPosition = function(s){
-		return seventh * s;
-	};
+	function onMouseDrag(event) {
+		globals.mouseDraggery(event);
+	}
+
+	globals.getSlideX = function() {
+		return slide.position.x;
+	}
 
 	globals.moveSlide = function(s){
 		var opt = opt;
-		var moveSlide = (slSvgSev * (s - 1))/1.77;
+		var moveSlide = (slSvgSev * (s - 1))/1.77; //114
 		var newSlidePos = initSlideX + moveSlide;
 
 		slide.tween({
@@ -138,18 +124,6 @@
 		console.log(slideSeventh);
 	};
 
-	globals.tween = function(num) { //remove later
-			
-		rect.tween({
-		    'position.x': num,
-		    'fillColor.hue': '+= 90'
-		}, {
-		    easing: 'easeInOutCubic',
-		    duration: 200
-		});
-
-		//console.log(slide.position, 'slSev ' + slSev);
-	}
 
 	globals.backToFirst = function(){
 		if(slide.position.x === topSlide){
@@ -160,7 +134,6 @@
 			globals.moveSlide(1);
 		}
 	}
-
 	// console.log(paper.project._view._id); //paperScope object id
 	paper.install(window);  //inject into window global scope
 
@@ -185,19 +158,26 @@ canvas[resize] {
     width: 1156px;
     height: 529px;*/
 }
-
 </style>
 
 
 <body>
 	<h1 id="headline">Note: <span id="note"></span></h1>
 	<canvas id="myCanvas" resize></canvas>
-
-
 </body>
 <script type="text/javascript">
 
-	window.globals = {}
+	window.globals = {
+
+		reg: 0, 
+		testCall: function(num){ 
+			var el = document.createElement("h2");
+
+			document.body.appendChild(el); 
+			el.innerHTML = "Global Reg is " + num; 
+		},
+
+	}
 
 	let activeKey; //most recent key down
 	let soundKeys = 0; //track pressed sound keys 
@@ -207,13 +187,16 @@ canvas[resize] {
 	let sliding = false; //sliding mouse
 	let coorKey; //corresponding 'key' 
 	let activeSound = false; //active sound if mousedown
-	let isKeyPress; 
+	//let isKeyPress; 
 	let initCount = 0; 
-	let mouseUp;
+	//let arrowKey = 'ArrowLeft' || 'ArrowRight' || 'ArrowUp' || 'ArrowDown';
+
+	let mouseUp; 
 	let mouseDown;
 	let mouseMove;
 	let keyDown
 	let keyUp;
+	let isLeftRight = false;
 
 
 	window.onload = function(){
@@ -221,51 +204,65 @@ canvas[resize] {
 		keyData = {
 			KeyA: {
 		  		src: [{note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'B Flat', track: 'trombone/long/bFlatHighLong.mp3'},{note: 'B Flat', track: 'trombone/long/bFlatLong.mp3'}],
-				pos: window.globals.calcPosition(1),
-				num: 1
+				// pos: window.globals.calcPosition(this.num),
+				num: 1,
+				key: 'KeyA'
 			},
 			KeyS: {
 		  		src: [{note: 'E' , track: 'trombone/long/eLong.mp3'}, {note: 'A', track: 'trombone/long/aLong.mp3'}, {note: 'A', track: 'trombone/long/aLowLong.mp3'}],
-				pos: window.globals.calcPosition(2),
-				num: 2
+				// pos: window.globals.calcPosition(this.num),
+				num: 2,
+				key: 'KeyS'
 			},
 			KeyD: {
 		  		src: [{note: 'E Flat', track: 'trombone/long/eFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLowLong.mp3'}],
-				pos: window.globals.calcPosition(3),
-				num: 3
+				// pos: window.globals.calcPosition(this.num),
+				num: 3,
+				key: 'KeyD'
 			},
 			KeyF: {
 		  		src: [{note: 'D', track: 'trombone/long/dLong.mp3'}, {note: 'G', track: 'trombone/long/gLong.mp3'}, {note: 'G', track: 'trombone/long/gLowLong.mp3'}],
-				pos: window.globals.calcPosition(4),
-				num: 4
+				// pos: window.globals.calcPosition(this.num),
+				num: 4,
+				key: 'KeyF'
 			},
 			KeyG: {
 		  		src: [{note: 'D Flat', track: 'trombone/long/dFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLowLong.mp3'}],
-				pos: window.globals.calcPosition(5),
-				num: 5
+				// pos: window.globals.calcPosition(this.num),
+				num: 5,
+				key: 'KeyG'
 			},
 			KeyH: {
 		  		src: [{note: 'C', track: 'trombone/long/cLong.mp3'}, {note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'F', track: 'trombone/long/fLowLong.mp3'}],		
-				pos: window.globals.calcPosition(6),
-				num: 6
+				// pos: window.globals.calcPosition(this.num),
+				num: 6,
+				key: 'KeyH'
 			},
 			KeyJ: {
 		  		src: [{note: 'B', track: 'trombone/long/bLong.mp3'}, {note: 'E', track: 'trombone/long/eLong.mp3'}, {note: 'E', track: 'trombone/long/eLowLong.mp3'}],  			
-				pos: window.globals.calcPosition(7),
-				num: 7
+				// pos: window.globals.calcPosition(this.num),
+				num: 7,
+				key: 'KeyJ'
 			}
 		}	
 
 		mouseDown = document.addEventListener('mousedown', callMouseDown);
-
 		mouseMove = document.addEventListener('mousemove', callMouseMove);
-		
 		mouseUp = document.addEventListener('mouseup', callMouseUp);
-
 		keyDown = document.addEventListener('keydown', callKeyDown);
-
 		keyUp = document.addEventListener('keyup', callKeyUp);
+		arrowKey = document.addEventListener('keydown', isArrowKey);
 
+		if(sliding){
+			keyDown.preventDefault();
+			arrowKey.preventDefault();
+		}
+
+		if(soundKeys >= 1  || isLeftRight) {
+			mouseDown.preventDefault();
+			mouseMove.preventDefault();
+			mouseUp.preventDefault();
+		}
 
 	} //end window.onload
 
@@ -273,103 +270,243 @@ canvas[resize] {
 	let title = document.getElementById("headline");
 	let note = document.getElementById("note");
 
-
-
 	title.addEventListener("click", (e) => {
+		console.log(activeSound);
 		checkStatus();
 	})
 
-
 	function callKeyDown(e){
 		keyed = e.code;
+		//window.globals.repeat = e.repeat;
+		isArrowKey(keyed, false, e.repeat);
+			
 
-			if(e.repeat && activeKey) {  		//on held down sound key, check to repeat sound
+			if(e.repeat){ 
+				needsSoundRepeat();
+				return;
+			} else {		
+			if(keyData[keyed] && (!e.getModifierState('Meta')) && !sliding){
+				callKeyMovement(keyed);
+				return;
+			} 
+		}
+
+	}
+
+	function isArrowKey(keyed, isReleased, isRepeat) {
+		let released = isReleased;
+		let repeat = isRepeat;
+
+		if(keyed === 'ArrowUp' || keyed === 'ArrowDown'){
+
+			if(released){
+				register = 0;
+				if(activeKey){
+					sound.fade(1,0,300);
+					playSound(activeKey);
+					return;
+				}
+			}else {		
+				if(repeat) {
 					needsSoundRepeat();
-					console.log("I am after the repeat");
-
-			} else { 							//new key 							
-
-				if((keyed === 'ArrowUp' || keyed === 'ArrowDown') && (activeKey)) { //to change note range 
-						getRegister(keyed);
+					return;
+				} else {
+					getRegister(keyed);
+					if(activeKey) {
 						sound.fade(1,0,300);
 						playSound(activeKey);
-						return;
+						return;	
+					}
 				}
-		
-				if(keyData[keyed] && (!e.getModifierState('Meta')) && !sliding){
-					activeKey = keyed; //active sound key
+			}
+			return;
+		}
+
+
+		if((keyed === 'ArrowLeft' || keyed === 'ArrowRight') && (!sliding)){
+			isLeftRight = true;
+			if(released){
+				console.log("Active"  + activeKey)
+				callKeyRelease(activeKey);
+				isLeftRight = false;
+				return;
+			}else {
+				if(repeat){
+					coorKey = activeKey;
+					needsSoundRepeat();
+					return;	
+				}else{
+					let coorKey = getKey(window.globals.getSlideX() - 114);
+					let coorNum = keyData[coorKey].num;
+					let nextPos = getStep(keyed, keyData[coorKey].num);
+					console.log("coorKey " + coorKey)
+
+					coorNum = nextPos;
+
+					let objArr = Object.values(keyData);
+					let nextKey;
+
+					for(var i = 0; i < objArr.length; i++){
+						if(objArr[i].num === coorNum){
+							nextKey = objArr[i].key;
+						}
+					}
+					callKeyMovement(nextKey);
+				}
+			}
+		}
+	}
+
+	function callKeyMovement(keyed) {
+		activeKey = keyed; //active sound key
 					soundKeys++; //pressed sound key count
 					if(soundKeys > 1){   //prevent sound overlap
 						soundKeys--;
 						sound.fade(1,0,300);  
 					} 
-
+					console.log(activeKey + "AKey")
 					playSound(activeKey);
-					//square animation
-					//window.globals.tween(keyData[activeKey].pos);
-
 					//slide animation
 					window.globals.moveSlide(keyData[activeKey].num);
 					return;
-				} else {
-					
-					if(keyed === 'ArrowUp' || keyed === 'ArrowDown'){
-					getRegister(keyed);
-					console.log("press arrow 5" + register);
-					}
-					//console.log("no assigned sound");
-					console.log("active key arrow pressed" + activeKey);
-					console.log("active sound" + activeSound);
-					return;	
-				}
-			}	
-			//console.log("down reported active key: " + activeKey);
+
+	}
+
+	function callKeyRelease(released){
+		if(released === activeKey && !sliding){
+				soundKeys--;
+				console.log("keyup activeKey " + activeKey, "key released " + released);
+				console.log("soundKeys");
+				sound.fade(1,0,300);
+				activeKey = null;
+				note.innerHTML = '';
+				//checkStatus();
+				return;
+			}
+
 	}
 
 	function callKeyUp(e){
 		released = e.code;
 
-		if(activeKey){
-			if((released === 'ArrowUp' || released === 'ArrowDown') && (activeKey)){
-				register = 0;
-				sound.fade(1,0,300);
-				playSound(activeKey);
-				return;
-			}
-
-			if(released === activeKey && !sliding){
-				soundKeys--;
-				//console.log("keyup activeKey " + activeKey, "key released " + released);
-				sound.fade(1,0,300);
-				activeKey = null;
-				note.innerHTML = '';
-				checkStatus();
-				return;
-			}
-		} else {
-
-			if(released === 'ArrowUp' || released === 'ArrowDown') {
-			register = 0;
-			console.log("release arrow" + register);
-			}
-			console.log("active key on arrow release" + activeKey);
-			console.log("active sound" + activeSound);
-			return;
-		}	
-		//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
+		isArrowKey(released, true, false);
+		callKeyRelease(released);
 	}
 
-
-	function checkStatus() { 
-
+	function checkStatus() {  //check inactivity
 		if(!sliding && soundKeys === 0){  //fix this - need cancel if 
 				var intervalID = setTimeout(() => { restoreSlide('one', 'two'); }, 3000);
 		} 
 		return;
+	}
+
+	function getRegister(selected){  //change note range (high or low)
+			(selected === 'ArrowUp') ? register = 1 : register = 2;
+			window.globals.reg = register; 
+	}
+
+	function getStep(selected, num){  //change slide position
+			(selected === 'ArrowLeft' && num === 1) ? num = 1 : num++; 
+			(selected === 'ArrowRight' && num === 7) ? num = 7 : num--; 
+			((num > 1 && num < 7) && selected === 'ArrowLeft' ) ? num-- : num++;
+			return num; 
+	}
+
+
+	function restoreSlide(){  //move back to first position/initial if user inactive
+		window.globals.backToFirst();
+	}
+
+
+	function clearAlert() {
+		window.clearTimeout(timeoutID);
+	}
+
+	function callMouseDown(e) {  //can be refactored 
+		if(soundKeys === 0) {  //if there is an active sound 
+			//isArrowKey(e)
+			sliding = true;
+			if(e.offsetX > 250 && e.offsetX < 966){
+				if(activeSound){	
+					sound.fade(1,0,200);
+				}
+
+				activeKey = getKey(e.offsetX);
+				playSound(activeKey);
+				//console.log(sound.playing());
+				window.globals.mouseDraggery({point: {x: e}});
+				return;
+			} 
+	
+		} else {
+			sliding  = false;
+			return;
+		}
 
 	}
 
-	function getKey(num){
+	function callMouseMove(e) {
+		
+		if(soundKeys === 0){	
+			if(sliding === true){
+				if(e.offsetX > 250 && e.offsetX < 966){
+					coorKey = getKey(e.offsetX);
+
+					if(coorKey != activeKey){
+						sound.fade(1,0,300);
+						activeKey = coorKey; 
+						playSound(activeKey);
+						window.globals.mouseDraggery({point: {x: e}});
+						return;	
+					}
+						
+				}else {  //if outside side bounds
+					console.log("mousemove not slide not moving // out of bounds " + sliding);
+					return;
+				}
+			}
+		}
+	}
+
+	function callMouseUp(e) {
+		if(sliding){
+		sliding = false;
+		sound.fade(1,0,200);
+		activeSound = false;
+		activeKey = null;
+		}
+		note.innerHTML = '';
+		//checkStatus();
+		return;
+	}
+
+	function playSound(key) {  //play sound
+		sound = new Howl({
+			src: keyData[key].src[register].track,
+			onfade: function(){
+				this.stop();
+				activeSound = false;
+			}
+		});
+		sound.play();
+		activeSound = sound.playing();
+
+		note.innerHTML = keyData[key].src[register].note; // + " Active Sound: " + activeSound;
+	}
+
+	function repeatNote(key, fadeTime) {
+
+	}
+
+	function needsSoundRepeat(){   //checks to see if getting close to sound track end to reset it with minimal lag
+		let checkEnd = sound.duration() - 0.15; //point near end for range to catch seek 
+		let currentPlace = sound.seek(); //current track seek placement
+		if(currentPlace > checkEnd){ //are we getting close to end?
+			sound.seek(0.15);  //reset seek to repeat 
+		}
+	}
+
+	function getKey(num){ //get cooresponding sounds from key data when sliding
 
 		let key;
 
@@ -393,131 +530,16 @@ canvas[resize] {
 			key = 'KeyG';
 		} else
 
-		if(num <= 925){
+		if(num <= 937){
 			key = 'KeyH';
 		} else
 
-		if(num > 925 && num < 970){
+		if(num > 937 && num < 970){
 			key = 'KeyJ';
 		} 
 
 		return key;	
 
-	}
-
-
-	function getRegister(selected){  //change note range (high or low)
-			(selected === 'ArrowUp') ? register = 1 : register = 2;
-	}
-
-
-	function restoreSlide(){
-		window.globals.backToFirst();
-	}
-
-
-	function clearAlert() {
-		window.clearTimeout(timeoutID);
-	}
-
-
-	function callMouseDown(e) {
-		// mousevent = true;
-		if(!activeSound && soundKeys === 0){
-			if(e.offsetX > 250 && e.offsetX < 966){
-				sliding = true;
-			
-				activeKey = getKey(e.offsetX);
-
-				playSound(activeKey);
-				//soundKeys++;
-				activeSound = sound.playing();
-				return;
-		
-			} else {
-				sliding = false;
-				console.log('out of range ' + e.offsetX, "mouse down sliding " + sliding);
-				console.log(soundKeys);
-				return;
-			}
-		}else { //if there is an active sound
-			if(soundKeys === 0) {
-			sliding = true;
-			sound.fade(1,0,200);
-			if(e.offsetX > 250 && e.offsetX < 966){
-				activeKey = getKey(e.offsetX);
-				playSound(activeKey);
-			}
-			//console.log(soundKeys, "activeKey " + activeKey);
-			//activeSound = sound.playing();
-			return;
-			}//if no soundkeys
-		}
-		return;
-	}
-
-	function callMouseMove(e) {
-			
-		if(sliding === true){
-			//console.log(activeSound);
-			if(e.offsetX > 250 && e.offsetX < 966){
-				coorKey = getKey(e.offsetX);
-				console.log(coorKey);
-				if(coorKey != activeKey){
-					sound.fade(1,0,300);
-					activeKey = coorKey; 
-					playSound(activeKey);
-					return;	
-				}
-					
-			}else {  //if outside side bounds
-				console.log("mousemove not slide not moving // out of bounds " + sliding);
-				return;
-			}
-		}// else { // if not sliding
-			//e.preventDefault();
-			//checkStatus();
-			// console.log("you shouldn't be here" + sliding);
-			// console.log("active sound? " + activeSound, "soundKeys??" + soundKeys);
-			return;
-		//}
-	}
-
-	function callMouseUp(e) {
-		// mousevent = false;
-		if(sliding){
-		sliding = false;
-		//soundKeys--;
-		sound.fade(1,0,200);
-		activeSound = false;
-		activeKey = null;
-		//coorKey = null;
-		}
-		note.innerHTML = '';
-		console.log("mouseEPh" + e.eventPhase);
-		// console.log("called mouse up");
-		checkStatus();
-		return;
-	}
-
-	function playSound(key) {  //play sound
-		sound = new Howl({
-			src: keyData[key].src[register].track,
-			onfade: function(){
-				this.stop();
-			}
-		});
-		sound.play();
-
-		note.innerHTML = keyData[key].src[register].note;
-	}
-
-	function needsSoundRepeat(){   //checks to see if getting close to sound track end to reset it with minimal lag
-		let checkEnd = sound.duration() - 0.15; //point near end for range to catch seek 
-		let currentPlace = sound.seek(); //current track seek placement
-		if(currentPlace > checkEnd){ //are we getting close to end?
-			sound.seek(0.15);  //reset seek to repeat 
-		}
 	}
 
 </script>
