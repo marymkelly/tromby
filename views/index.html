@@ -26,7 +26,9 @@
 
 	//trombone vars
 	var trombone;
+	var bell;
 	var slide;
+	var slideChild;
 	var slSvgSev;
 	var initSlideX; //386.6667 center X of slide
 	var maxSlideX; //1586.2 max point for center X of slide
@@ -45,15 +47,18 @@
 	var rect = new Shape.Rectangle(rectPoint, rectSize);
 	//rect.fillColor = 'blue';
 
-	paper.project.importSVG('/images/belltb.svg', function(onload) { //background trombone image
+	paper.project.importSVG('/images/tspBell.svg', function(onload) { //background trombone image
 		trombone = onload;
 	
 		trombone.bounds.width;
 		trombone.position = new Point((pWidth / 3), midY);
+		bell = trombone.children[1].children['Layer_4'].children[2];
+		bell.fillColor = "#17FFEF";
+		console.log(trombone.children);
 		// trombone.position = new Point(386.67, midY);
 	});
 
-	paper.project.importSVG('/images/slidetb.svg', function(onload) { //animated trombone slide
+	paper.project.importSVG('/images/tspSlide.svg', function(onload) { //animated trombone slide
 		slide = onload;
 		
 		//slide.scale(1,1);
@@ -72,6 +77,10 @@
 		bottomSlide = rightSlSvg; // 1085
 		slideSeventh = (bottomSlide - topSlide) / 7; //120
 
+		slideChild = slide.children[1].children['Layer_4'].children[0];
+		slideChild.fillColor = "#17FFEF";
+		console.log(slide);
+
 		// console.log("initSlideX" + initSlideX); //385
 		//slide.strokeColor = "purple";
 		//slide.strokeWidth = 2;
@@ -80,11 +89,13 @@
 
 	});
 
-	var myPath;
-
 	function onMouseDown(event) {
 		globals.mouseDraggery(event);
 
+	}
+
+	function onMouseDrag(event) {
+		globals.mouseDraggery(event);
 	}
 
 	globals.mouseDraggery = function(event) {
@@ -99,11 +110,6 @@
 		}
 	}
 
-
-	function onMouseDrag(event) {
-		globals.mouseDraggery(event);
-	}
-
 	globals.getSlideX = function() {
 		return slide.position.x;
 	}
@@ -115,10 +121,25 @@
 
 		slide.tween({
 			'position.x': newSlidePos,
+			
 		}, {
 			easing: 'easeInOutCubic',
 		    duration: 200
 		});
+
+		bell.tween({
+			'fillColor.hue': '+=5'
+		}, {
+			easing: 'easeInOutCubic',
+		    duration: 200
+		})
+
+		slideChild.tween({
+			'fillColor.hue': '+=5'
+		}, {
+			easing: 'easeInOutCubic',
+		    duration: 200
+		})
 
 		console.log("newX " + newSlidePos);
 		console.log(slideSeventh);
@@ -266,7 +287,7 @@ canvas[resize] {
 
 	} //end window.onload
 
-
+	//TESTING FUNCTIONS
 	let title = document.getElementById("headline");
 	let note = document.getElementById("note");
 
@@ -275,7 +296,9 @@ canvas[resize] {
 		checkStatus();
 	})
 
-	function callKeyDown(e){
+	//KEYBOARD EVENT HANDLERS
+
+		function callKeyDown(e){ //one key down
 		keyed = e.code;
 		//window.globals.repeat = e.repeat;
 		isArrowKey(keyed, false, e.repeat);
@@ -293,7 +316,44 @@ canvas[resize] {
 
 	}
 
-	function isArrowKey(keyed, isReleased, isRepeat) {
+	function callKeyMovement(keyed) {  //call slide postition movement based off key
+		activeKey = keyed; //active sound key
+					soundKeys++; //pressed sound key count
+					if(soundKeys > 1){   //prevent sound overlap
+						soundKeys--;
+						sound.fade(1,0,300);  
+					} 
+					console.log(activeKey + "AKey")
+					playSound(activeKey);
+					//slide animation
+					window.globals.moveSlide(keyData[activeKey].num);
+					return;
+
+	}
+
+	function callKeyUp(e){ //on key up
+		released = e.code;
+
+		isArrowKey(released, true, false);
+		callKeyRelease(released);
+	}
+
+	function callKeyRelease(released){  //if key released
+		if(released === activeKey && !sliding){
+				soundKeys--;
+				console.log("keyup activeKey " + activeKey, "key released " + released);
+				console.log("soundKeys");
+				sound.fade(1,0,300);
+				activeKey = null;
+				note.innerHTML = '';
+				//checkStatus();
+				return;
+			}
+	}
+
+	//Arrow Key Functions
+
+	function isArrowKey(keyed, isReleased, isRepeat) {  //if key down is an arrow key
 		let released = isReleased;
 		let repeat = isRepeat;
 
@@ -357,72 +417,9 @@ canvas[resize] {
 		}
 	}
 
-	function callKeyMovement(keyed) {
-		activeKey = keyed; //active sound key
-					soundKeys++; //pressed sound key count
-					if(soundKeys > 1){   //prevent sound overlap
-						soundKeys--;
-						sound.fade(1,0,300);  
-					} 
-					console.log(activeKey + "AKey")
-					playSound(activeKey);
-					//slide animation
-					window.globals.moveSlide(keyData[activeKey].num);
-					return;
+	//MOUSE EVENT HANDLERS
 
-	}
-
-	function callKeyRelease(released){
-		if(released === activeKey && !sliding){
-				soundKeys--;
-				console.log("keyup activeKey " + activeKey, "key released " + released);
-				console.log("soundKeys");
-				sound.fade(1,0,300);
-				activeKey = null;
-				note.innerHTML = '';
-				//checkStatus();
-				return;
-			}
-
-	}
-
-	function callKeyUp(e){
-		released = e.code;
-
-		isArrowKey(released, true, false);
-		callKeyRelease(released);
-	}
-
-	function checkStatus() {  //check inactivity
-		if(!sliding && soundKeys === 0){  //fix this - need cancel if 
-				var intervalID = setTimeout(() => { restoreSlide('one', 'two'); }, 3000);
-		} 
-		return;
-	}
-
-	function getRegister(selected){  //change note range (high or low)
-			(selected === 'ArrowUp') ? register = 1 : register = 2;
-			window.globals.reg = register; 
-	}
-
-	function getStep(selected, num){  //change slide position
-			(selected === 'ArrowLeft' && num === 1) ? num = 1 : num++; 
-			(selected === 'ArrowRight' && num === 7) ? num = 7 : num--; 
-			((num > 1 && num < 7) && selected === 'ArrowLeft' ) ? num-- : num++;
-			return num; 
-	}
-
-
-	function restoreSlide(){  //move back to first position/initial if user inactive
-		window.globals.backToFirst();
-	}
-
-
-	function clearAlert() {
-		window.clearTimeout(timeoutID);
-	}
-
-	function callMouseDown(e) {  //can be refactored 
+	function callMouseDown(e) {  //on mouse down - mainly sound handler
 		if(soundKeys === 0) {  //if there is an active sound 
 			//isArrowKey(e)
 			sliding = true;
@@ -445,7 +442,7 @@ canvas[resize] {
 
 	}
 
-	function callMouseMove(e) {
+	function callMouseMove(e) {  //on mouse drag - cooresponding sound handler
 		
 		if(soundKeys === 0){	
 			if(sliding === true){
@@ -468,7 +465,7 @@ canvas[resize] {
 		}
 	}
 
-	function callMouseUp(e) {
+	function callMouseUp(e) {  // on mouse up
 		if(sliding){
 		sliding = false;
 		sound.fade(1,0,200);
@@ -479,6 +476,9 @@ canvas[resize] {
 		//checkStatus();
 		return;
 	}
+
+
+	//SOUND FUNCTIONS
 
 	function playSound(key) {  //play sound
 		sound = new Howl({
@@ -494,17 +494,20 @@ canvas[resize] {
 		note.innerHTML = keyData[key].src[register].note; // + " Active Sound: " + activeSound;
 	}
 
-	function repeatNote(key, fadeTime) {
+	function repeatNote(key, fadeTime) { //if note is repeated - not sure if still needed for arrow keys
 
 	}
 
-	function needsSoundRepeat(){   //checks to see if getting close to sound track end to reset it with minimal lag
+	function needsSoundRepeat(){   //if key is held on repeat - checks to see if getting close to sound track end to reset it with minimal lag
 		let checkEnd = sound.duration() - 0.15; //point near end for range to catch seek 
 		let currentPlace = sound.seek(); //current track seek placement
 		if(currentPlace > checkEnd){ //are we getting close to end?
 			sound.seek(0.15);  //reset seek to repeat 
 		}
 	}
+
+
+	//COORESPONDING VALUES FUNCTIONS
 
 	function getKey(num){ //get cooresponding sounds from key data when sliding
 
@@ -541,6 +544,37 @@ canvas[resize] {
 		return key;	
 
 	}
+
+	function getRegister(selected){  //change note range (high or low)
+			(selected === 'ArrowUp') ? register = 1 : register = 2;
+			window.globals.reg = register; 
+	}
+
+	function getStep(selected, num){  //change slide position from left or right arrow keys
+			(selected === 'ArrowLeft' && num === 1) ? num = 1 : num++; 
+			(selected === 'ArrowRight' && num === 7) ? num = 7 : num--; 
+			((num > 1 && num < 7) && selected === 'ArrowLeft' ) ? num-- : num++;
+			return num; 
+	}
+
+
+	//INACTIVITY AND OTHER OPERATIONAL FUNCTIONS
+
+	function checkStatus() {  //check inactivity
+		if(!sliding && soundKeys === 0){  //fix this - need cancel if 
+				var intervalID = setTimeout(() => { restoreSlide('one', 'two'); }, 3000);
+		} 
+		return;
+	}
+
+	function restoreSlide(){  //move back to first position/initial if user inactive
+		window.globals.backToFirst();
+	}
+
+	function clearAlert() {
+		window.clearTimeout(timeoutID);
+	}
+
 
 </script>
 
