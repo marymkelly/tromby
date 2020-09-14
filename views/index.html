@@ -190,7 +190,7 @@ canvas[resize] {
 
 
 <body>
-	<h1 id="headline">Hello World!</h1>
+	<h1 id="headline">Note: <span id="note"></span></h1>
 	<canvas id="myCanvas" resize></canvas>
 
 
@@ -210,7 +210,10 @@ canvas[resize] {
 	let isKeyPress; 
 	let initCount = 0; 
 	let mouseUp;
+	let mouseDown;
+	let mouseMove;
 	let keyDown
+	let keyUp;
 
 
 	window.onload = function(){
@@ -253,114 +256,28 @@ canvas[resize] {
 			}
 		}	
 
-		document.addEventListener('mousedown', (e) => {
-			// mousevent = true;
-			if(!activeSound && soundKeys === 0){
-				if(e.offsetX > 250 && e.offsetX < 966){
-					sliding = true;
-				
-					activeKey = getKey(e.offsetX);
+		mouseDown = document.addEventListener('mousedown', callMouseDown);
 
-					playSound(activeKey);
-					//soundKeys++;
-					activeSound = sound.playing();
-					return;
-			
-				} else {
-					sliding = false;
-					console.log('out of range ' + e.offsetX, "mouse down sliding " + sliding);
-					console.log(soundKeys);
-					return;
-				}
-			}else { //if there is an active sound
-				if(soundKeys === 0) {
-				sliding = true;
-				sound.fade(1,0,200);
-				if(e.offsetX > 250 && e.offsetX < 966){
-					activeKey = getKey(e.offsetX);
-					playSound(activeKey);
-				}
-				//console.log(soundKeys, "activeKey " + activeKey);
-				//activeSound = sound.playing();
-				return;
-				}//if no soundkeys
-			}
-			return;
-		})
-
-		document.addEventListener('mousemove', (e) => {
-			
-			if(sliding === true){
-				//console.log(activeSound);
-				if(e.offsetX > 250 && e.offsetX < 966){
-					coorKey = getKey(e.offsetX);
-					console.log(coorKey);
-					if(coorKey != activeKey){
-						sound.fade(1,0,300);
-						activeKey = coorKey; 
-						playSound(activeKey);
-						return;	
-					}
-						
-				}else {  //if outside side bounds
-					console.log("mousemove not slide not moving // out of bounds " + sliding);
-					return;
-				}
-			}// else { // if not sliding
-				//e.preventDefault();
-				//checkStatus();
-				// console.log("you shouldn't be here" + sliding);
-				// console.log("active sound? " + activeSound, "soundKeys??" + soundKeys);
-				return;
-			//}
-		})
-
+		mouseMove = document.addEventListener('mousemove', callMouseMove);
 		
 		mouseUp = document.addEventListener('mouseup', callMouseUp);
 
 		keyDown = document.addEventListener('keydown', callKeyDown);
 
-		document.addEventListener('keyup', (e) => {
-			released = e.code;
+		keyUp = document.addEventListener('keyup', callKeyUp);
 
-			if(activeKey){
-				if((released === 'ArrowUp' || released === 'ArrowDown') && (activeKey)){
-					register = 0;
-					sound.fade(1,0,300);
-					playSound(activeKey);
-					//return;
-				}
 
-				if(released === activeKey && !sliding){
-					soundKeys--;
-					//console.log("keyup activeKey " + activeKey, "key released " + released);
-					sound.fade(1,0,300);
-					activeKey = null;
-					checkStatus();
-					return;
-				}
-			} else {
-
-				if(released === 'ArrowUp' || released === 'ArrowDown') {
-				register = 0;
-				console.log("release arrow" + register);
-				}
-				console.log("active key on arrow release" + activeKey);
-				console.log("active sound" + activeSound);
-				return;
-			}
-
-				//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
-			});
 	} //end window.onload
 
 
-	var title = document.getElementById("headline");
+	let title = document.getElementById("headline");
+	let note = document.getElementById("note");
+
+
 
 	title.addEventListener("click", (e) => {
 		checkStatus();
 	})
-
 
 
 	function callKeyDown(e){
@@ -406,10 +323,42 @@ canvas[resize] {
 					return;	
 				}
 			}	
-
 			//console.log("down reported active key: " + activeKey);
-
 	}
+
+	function callKeyUp(e){
+		released = e.code;
+
+		if(activeKey){
+			if((released === 'ArrowUp' || released === 'ArrowDown') && (activeKey)){
+				register = 0;
+				sound.fade(1,0,300);
+				playSound(activeKey);
+				return;
+			}
+
+			if(released === activeKey && !sliding){
+				soundKeys--;
+				//console.log("keyup activeKey " + activeKey, "key released " + released);
+				sound.fade(1,0,300);
+				activeKey = null;
+				note.innerHTML = '';
+				checkStatus();
+				return;
+			}
+		} else {
+
+			if(released === 'ArrowUp' || released === 'ArrowDown') {
+			register = 0;
+			console.log("release arrow" + register);
+			}
+			console.log("active key on arrow release" + activeKey);
+			console.log("active sound" + activeSound);
+			return;
+		}	
+		//console.log("key up: " + e.key, "up reported activeKey: " + activeKey);
+	}
+
 
 	function checkStatus() { 
 
@@ -471,6 +420,69 @@ canvas[resize] {
 		window.clearTimeout(timeoutID);
 	}
 
+
+	function callMouseDown(e) {
+		// mousevent = true;
+		if(!activeSound && soundKeys === 0){
+			if(e.offsetX > 250 && e.offsetX < 966){
+				sliding = true;
+			
+				activeKey = getKey(e.offsetX);
+
+				playSound(activeKey);
+				//soundKeys++;
+				activeSound = sound.playing();
+				return;
+		
+			} else {
+				sliding = false;
+				console.log('out of range ' + e.offsetX, "mouse down sliding " + sliding);
+				console.log(soundKeys);
+				return;
+			}
+		}else { //if there is an active sound
+			if(soundKeys === 0) {
+			sliding = true;
+			sound.fade(1,0,200);
+			if(e.offsetX > 250 && e.offsetX < 966){
+				activeKey = getKey(e.offsetX);
+				playSound(activeKey);
+			}
+			//console.log(soundKeys, "activeKey " + activeKey);
+			//activeSound = sound.playing();
+			return;
+			}//if no soundkeys
+		}
+		return;
+	}
+
+	function callMouseMove(e) {
+			
+		if(sliding === true){
+			//console.log(activeSound);
+			if(e.offsetX > 250 && e.offsetX < 966){
+				coorKey = getKey(e.offsetX);
+				console.log(coorKey);
+				if(coorKey != activeKey){
+					sound.fade(1,0,300);
+					activeKey = coorKey; 
+					playSound(activeKey);
+					return;	
+				}
+					
+			}else {  //if outside side bounds
+				console.log("mousemove not slide not moving // out of bounds " + sliding);
+				return;
+			}
+		}// else { // if not sliding
+			//e.preventDefault();
+			//checkStatus();
+			// console.log("you shouldn't be here" + sliding);
+			// console.log("active sound? " + activeSound, "soundKeys??" + soundKeys);
+			return;
+		//}
+	}
+
 	function callMouseUp(e) {
 		// mousevent = false;
 		if(sliding){
@@ -481,6 +493,7 @@ canvas[resize] {
 		activeKey = null;
 		//coorKey = null;
 		}
+		note.innerHTML = '';
 		console.log("mouseEPh" + e.eventPhase);
 		// console.log("called mouse up");
 		checkStatus();
@@ -495,6 +508,8 @@ canvas[resize] {
 			}
 		});
 		sound.play();
+
+		note.innerHTML = keyData[key].src[register].note;
 	}
 
 	function needsSoundRepeat(){   //checks to see if getting close to sound track end to reset it with minimal lag
