@@ -8,13 +8,15 @@
 	<!-- Define inlined PaperScript associate it with myCanvas -->
 	<script type="text/paperscript" canvas="myCanvas">
 
+
 	//paper/canvas variables
 	var pWidth = view.bounds.width; 
 	var pHeight = view.bounds.height;
 	var midY = pHeight / 2;
 	var midX = pWidth / 2;
+	var pWidth3; 
 
-	var pSeventh = ((pWidth - 250) / 7);
+	var pSeventh; //= ((pWidth - 250) / 7);
 	//shape variables
 	var width = 100;
 	var height = 100;
@@ -22,13 +24,15 @@
 	//var seventh = (pWidth - (width * 1.5)) / 7; //143
 	//rectangle for testing position
 	var rectSize = new Size(width, height);
-	var rectPoint = new Point(width , (midY - (rectSize.height/2)));
+	//var rectPoint = new Point(width , (midY - (rectSize.height/2)));
 
 	//trombone vars
 	var trombone;
 	var bell;
 	var slide;
 	var slideChild;
+
+
 	var slSvgSev;
 	var initSlideX; //386.6667 center X of slide
 	var maxSlideX; //1586.2 max point for center X of slide
@@ -41,11 +45,9 @@
 	var leftSlSvg; // ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg 
 	var rightSlSvg; // ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg 
 
-	// var propoX = 1401 /pWidth;
-	// var propoY = 490 / pHeight;
-
-	var rect = new Shape.Rectangle(rectPoint, rectSize);
-	//rect.fillColor = 'blue';
+	// var rectPoint = new Point(width , (midY - (rectSize.height/2)));
+	// var rect = new Shape.Rectangle(rectPoint, rectSize);
+	// rect.fillColor = 'blue';
 
 	paper.project.importSVG('/images/tspBell.svg', function(onload) { //background trombone image
 		trombone = onload;
@@ -61,31 +63,45 @@
 	paper.project.importSVG('/images/tspSlide.svg', function(onload) { //animated trombone slide
 		slide = onload;
 		
-		//slide.scale(1,1);
 		//console.log(slide.bounds);
 		slide.position = new Point((pWidth / 3), midY); 
 		// slide.position = new Point(386.67, midY); 
 
+		pWidth3 = (pWidth / 3); // same as initial slide x
+		pSeventh = (pWidth / 7);
+		var pQuarter = (pWidth * 0.2527); // where slide starts approx, will have to resize for smaller screens
+
 		slSvgSev = (slide.bounds.width / 7); // for calculating max center X
 		initSlideX = slide.position.x; 
-		maxSlideX = initSlideX + (slide.bounds.width - slSvgSev); //supposed to be max center X
+		//maxSlideX = initSlideX + (slide.bounds.width - slSvgSev); //supposed to be max center X - no go
 
 		leftSlSvg = ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg 
-		rightSlSvg = ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg
+		rightSlSvg = ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg - bottom of slide - good
 		offset = (pWidth - (slide.bounds.width - (pWidth / 3))); //from right side of canvas 
-		topSlide = initSlideX - offset; // 245 - static
-		bottomSlide = rightSlSvg; // 1085
-		slideSeventh = (bottomSlide - topSlide) / 7; //120
+		topSlide = pQuarter; // should be fixed/closer
+		bottomSlide = rightSlSvg; // 1085 - good
+		slideSeventh = (bottomSlide - topSlide) / 7; //120 - wrong
 
 		slideChild = slide.children[1].children['Layer_4'].children[0];
 		slideChild.fillColor = "#17FFEF";
 		console.log(slide);
 
-		// console.log("initSlideX" + initSlideX); //385
+		console.log("initSlideX" + initSlideX, "leftSlSvg" + leftSlSvg); //385
+		console.log("topSlide" + topSlide, "bottomSlide" + bottomSlide);
+
+		var rectPoint = new Point(initSlideX , (midY - (rectSize.height/2)));
+		//var rect = new Shape.Rectangle(rectPoint, rectSize);
+		//rect.fillColor = 'blue';
+		console.log("offset" +  offset, "pWidth3" + pWidth3);
+		console.log("slSvgSev" + slSvgSev, "pSeventh" + pSeventh, "slideSeventh" + slideSeventh);
+
+		//slideSeventh
 		//slide.strokeColor = "purple";
 		//slide.strokeWidth = 2;
+		//var rectl = new Shape.Rectangle(new Point(pQuarter ,(midY - (25/2))), new Size(25, 25));
+		//rectl.fillColor = 'purple';
 
-		// console.log("pW " + pWidth + "pH " + pHeight + "sl " + slide.bounds); 
+		console.log("pW " + pWidth + "pH " + pHeight + "sl " + slide.bounds); 
 
 	});
 
@@ -107,6 +123,7 @@
 			}else {
 					slide.position.x = event.point.x + 105;
 			}
+			console.log("mouseDraggery" +  event.point.x)
 		}
 	}
 
@@ -159,30 +176,60 @@
 	paper.install(window);  //inject into window global scope
 
 	</script>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Sacramento&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Open+Sans&display=swap" rel="stylesheet">
 </head>
 
 <style>
 #myCanvas {
-	border: 2px solid red;
+	//border: 2px solid red;
 }
 
 html,
 body {
     height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+/*    font-family: 'Open Sans', sans-serif;
+	font-family: 'Sacramento', cursive;*/
+	font-family: 'Architects Daughter', cursive;
+	/*font-family: 'Open Sans', sans-serif;*/
+    color: white;
+    overflow: hidden;
+    background: #000428;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 }
 
 /* Scale canvas with resize attribute to full size */
 canvas[resize] {
-    width: 80vw;
-    height: 90vh;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
 /*
     width: 1156px;
     height: 529px;*/
+}
+
+#bg{
+	clip-path: polygon(15% 88%, 86% 87%, 100% 100%, 0% 100%);
+	height: 100vh;
+	width: 100vw;
+	/*background-color: navy;*/
+	background-color: #111;
+	position: absolute;
 }
 </style>
 
 
 <body>
+	<div id="bg"></div>
 	<h1 id="headline">Note: <span id="note"></span></h1>
 	<canvas id="myCanvas" resize></canvas>
 </body>
@@ -197,7 +244,6 @@ canvas[resize] {
 			document.body.appendChild(el); 
 			el.innerHTML = "Global Reg is " + num; 
 		},
-
 	}
 
 	let activeKey; //most recent key down
@@ -302,7 +348,6 @@ canvas[resize] {
 		keyed = e.code;
 		//window.globals.repeat = e.repeat;
 		isArrowKey(keyed, false, e.repeat);
-			
 
 			if(e.repeat){ 
 				needsSoundRepeat();
@@ -431,6 +476,7 @@ canvas[resize] {
 				activeKey = getKey(e.offsetX);
 				playSound(activeKey);
 				//console.log(sound.playing());
+
 				window.globals.mouseDraggery({point: {x: e}});
 				return;
 			} 
