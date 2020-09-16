@@ -7,24 +7,16 @@
 	<script type="text/javascript" src="js/howler.js"></script>
 	<!-- Define inlined PaperScript associate it with myCanvas -->
 	<script type="text/paperscript" canvas="myCanvas">
-
-
 	//paper/canvas variables
 	var pWidth = view.bounds.width; 
 	var pHeight = view.bounds.height;
 	var midY = pHeight / 2;
 	var midX = pWidth / 2;
 	var pWidth3; // (pWidth / 3) - initSlideX
-	var pQuarter; // (pWidth * 0.2527) // top visual slide start approx
 
-	// var pSeventh; //= ((pWidth - 250) / 7); - not used, good for measuring
 	//shape variables
 	var width = 100;
 	var height = 100;
-	//calculate slide positions
-	//rectangle for testing position
-	var rectSize = new Size(width, height);
-	//var rectPoint = new Point(width , (midY - (rectSize.height/2)));
 
 	//trombone vars
 	//var trombone;
@@ -32,6 +24,7 @@
 	//var slide;
 	var slideChild = {};  //recolor
 
+	//calculate slide positions
 	var initSlideX; //center X of slide - used
 	var offset; // - used
 	var slideSeventh; // equal division of 7 parts //116 each - used
@@ -49,7 +42,7 @@
 		trombone.position = new Point((pWidth / 3), midY);
 		bell = trombone.children[1].children['Layer_4'].children[2];
 		bell.fillColor = "#17FFEF";
-		console.log(trombone.children);
+		//console.log(trombone.children);
 	});
 
 	var slide = paper.project.importSVG('/images/tspSlide.svg', function(onload) { //animated trombone slide
@@ -60,40 +53,36 @@
 		pWidth3 = (pWidth / 3); // same as initial slide x
 		initSlideX = slide.position.x; 
 
-		// pSeventh = (pWidth / 7); //not used, good for measuring
-		var pQuarter = (pWidth * 0.2527); // where slide starts approx, will have to resize for smaller screens
-
 		leftSlSvg = ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg 
 		rightSlSvg = ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg - bottom of slide - good
 		offset = (pWidth * 0.0806); //from right side of canvas - used
-		topSlide = pQuarter; // visual top of slide; should be fixed/closer //corrected sans resonsiveness
+		topSlide =  (pWidth * 0.2527);; // visual top of slide; should be fixed/closer //corrected sans resonsiveness
 		bottomSlide = rightSlSvg; // good
 		slideSeventh = (bottomSlide - topSlide) / 7; // corrected
 
 		slideChild = slide.children[1].children['Layer_4'].children[0];
 		slideChild.fillColor = "#17FFEF";
-		console.log(slide);
-
-		var rectPoint = new Point(initSlideX , (midY - (rectSize.height/2)));
-		//var rect = new Shape.Rectangle(rectPoint, rectSize);
-		//rect.fillColor = 'blue';
-		// console.log("offset" +  offset, "pWidth3 " + pWidth3, "qQuarter " + pQuarter);
 
 		// placement rectangle 
+		// var rectPoint = new Point(initSlideX , (midY - (rectSize.height/2)));
 		// var rectl = new Shape.Rectangle(new Point(topSlide ,(midY - (25/2))), new Size(25, 25));
 		// rectl.fillColor = 'purple';
-		console.log("pW " + pWidth + "pH " + pHeight + "sl " + slide.bounds); 
+		//console.log("pW " + pWidth + "pH " + pHeight + "sl " + slide.bounds); 
 
 	});
 
 	function onMouseDown(event) {
-		if(event.event.button === 0) {
+		if(globals.conflict){
+			return;
+		} else if(event.event.button === 0) {
 			globals.mouseDraggery(event);
 		} return;
 	}
 
 	function onMouseDrag(event) {
-		if(event.event.button === 0) {
+		if(globals.conflict){
+			return;
+		} else if(event.event.button === 0) {
 			globals.mouseDraggery(event);
 		} return;
 	}
@@ -173,7 +162,7 @@
 
 <style>
 #myCanvas {
-	border: 2px solid red;
+	/*border: 2px solid red;*/
 }
 
 html,
@@ -209,8 +198,13 @@ canvas[resize] {
 	clip-path: polygon(15% 88%, 86% 87%, 100% 100%, 0% 100%);
 	height: 100vh;
 	width: 100vw;
-	/*background-color: navy;*/
-	background-color: #111;
+	background-color: navy;
+	/*background-color: #111;*/
+	position: absolute;
+}
+
+#placeholder {
+	left: 50px;
 	position: absolute;
 }
 </style>
@@ -218,54 +212,71 @@ canvas[resize] {
 
 <body>
 	<!-- <div id="bg"></div> -->
+	<div id="placeholder">
 	<h1 id="headline">Note: <span id="note"></span></h1>
+	</div>
 	<canvas id="myCanvas" resize></canvas>
 </body>
 <script type="text/javascript">
 
 	window.globals = {
-
 		start: (window.innerWidth * 0.23),
-		end: (window.innerWidth * 0.81)
-
+		end: (window.innerWidth * 0.81),
+		conflict: true
 	}
 
 	let keyData = {
-		KeyA: {
+			KeyA: {
 		  		src: [{note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'B Flat', track: 'trombone/long/bFlatHighLong.mp3'},{note: 'B Flat', track: 'trombone/long/bFlatLong.mp3'}],
 				num: 1,
-				key: 'KeyA'
+				key: 'KeyA',
+				pressed: false
 			},
 			KeyS: {
 		  		src: [{note: 'E' , track: 'trombone/long/eLong.mp3'}, {note: 'A', track: 'trombone/long/aLong.mp3'}, {note: 'A', track: 'trombone/long/aLowLong.mp3'}],
 				num: 2,
-				key: 'KeyS'
+				key: 'KeyS',
+				pressed: false
 			},
 			KeyD: {
 		  		src: [{note: 'E Flat', track: 'trombone/long/eFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLowLong.mp3'}],
 				num: 3,
-				key: 'KeyD'
+				key: 'KeyD',
+				pressed: false
 			},
 			KeyF: {
 		  		src: [{note: 'D', track: 'trombone/long/dLong.mp3'}, {note: 'G', track: 'trombone/long/gLong.mp3'}, {note: 'G', track: 'trombone/long/gLowLong.mp3'}],
 				num: 4,
-				key: 'KeyF'
+				key: 'KeyF',
+				pressed: false
 			},
 			KeyG: {
 		  		src: [{note: 'D Flat', track: 'trombone/long/dFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLowLong.mp3'}],
 				num: 5,
-				key: 'KeyG'
+				key: 'KeyG',
+				pressed: false
 			},
 			KeyH: {
 		  		src: [{note: 'C', track: 'trombone/long/cLong.mp3'}, {note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'F', track: 'trombone/long/fLowLong.mp3'}],		
 				num: 6,
-				key: 'KeyH'
+				key: 'KeyH',
+				pressed: false
 			},
 			KeyJ: {
 		  		src: [{note: 'B', track: 'trombone/long/bLong.mp3'}, {note: 'E', track: 'trombone/long/eLong.mp3'}, {note: 'E', track: 'trombone/long/eLowLong.mp3'}],  			
 				num: 7,
-				key: 'KeyJ'
-			}};
+				key: 'KeyJ',
+				pressed: false
+			},
+			ArrowLeft: {
+				key: 'ArrowLeft',
+				pressed: false
+			},
+			ArrowRight: {
+				key: 'ArrowRight',
+				pressed: false
+			}
+		};
 
 	let activeKey; //most recent key down
 	let soundKeys = 0; //track pressed sound keys 
@@ -274,72 +285,26 @@ canvas[resize] {
 	let sliding = false; //sliding mouse
 	let coorKey; //corresponding 'key' 
 	let activeSound = false; //active sound if mousedown
-	let initCount = 0; 
+	let pressedKeys = false; //tracking pressed keys
 	
 	let mouseUp; 
 	let mouseDown;
 	let mouseMove;
 	let keyDown;
 	let keyUp;
-	var timeoutID;
+
+	let pointerDown = new PointerEvent("pointerdown", 
+	   {
+	   	bubbles: true, 
+	    cancelable: true, 
+	    pointerType: "touch",
+	    // isPrimary: true
+	}); 
+	let pointerMove = new PointerEvent("pointermove");
+	let pointerUp = new PointerEvent("pointerup");
+	let timeoutID;
 
 	window.onload = function(){
-
-		function handler(event) {
-			//console.log(event);
-			//clearAlert();
-
-			if(MouseEvent){
-				if(event.button === 0){
-					if(event.type === 'mousedown'){
-						callMouseDown(event);
-					} else if(event.type === 'mousemove'){
-						callMouseMove(event);
-					} else if(event.type === 'mouseup') {
-						callMouseUp(event);	
-						// callRelease(event);
-					} 
-				} else {
-					event.preventDefault();
-				}
-			} 
-
-		    if(KeyboardEvent){
-	    		if(event.repeat){ 
-					needsSoundRepeat();
-					//return;
-				} else {
-
-			    	if((event.code === 'ArrowUp') || (event.code === 'ArrowDown')){	
-			    		(event.type === 'keydown') ? getRegister(event.code) : (register = 0);
-				    	
-			    		if(sliding || soundKeys){
-				    		sound.fade(1,0,300);
-				    		playSound(activeKey);	
-			    		}
-
-				    }else if (((event.code === 'ArrowLeft') || (event.code === 'ArrowRight')) && !sliding){
-				
-				    	(event.type === 'keydown') ? arrowSlide(event.code) : callKeyRelease(activeKey); // - fix this	
-				    	// return;
-
-				    }else if((keyData[event.code] && (!event.getModifierState('Meta'))) && !sliding) {
-						
-						(event.type === 'keydown') ? callKeyMovement(event.code) : callKeyRelease(event.code);
-
-					} else {
-						event.preventDefault();
-						//console.log("key not valid // something went awry");
-					}
-				}
-		    } 
-		    else {
-		    	console.log("Event not handled");
-		    	return;
-		    }
-
-		   // timeOutID = setTimeout(() => {window.globals.backToFirst();}, 5000);
-		}	
 
 		mouseDown = document.addEventListener('mousedown', handler);
 		mouseMove = document.addEventListener('mousemove', handler);
@@ -347,21 +312,62 @@ canvas[resize] {
 		keyDown = document.addEventListener('keydown', handler);
 		keyUp = document.addEventListener('keyup', handler);
 		arrowKey = document.addEventListener('keydown', handler);
+		pointerDown = document.addEventListener('pointerdown', handler);
+		pointerMove = document.addEventListener('pointermove', handler);
+		pointerUp = document.addEventListener('pointerup', handler);
 
+		document.addEventListener('keydown', (e)=> { //listen on key down for keys pressed
+			if(keyData[e.code]) {
+				keyData[e.code].pressed = true;
+				pressedKeys = true;
+			}
+		})
+
+		document.addEventListener('keyup', (e)=> { //listen on key up for keys pressed
+			pressedKeys = false;
+			if(keyData[e.code]) {
+				keyData[e.code].pressed = false;
+			}
+
+			for (const [key, value] of Object.entries(keyData)) {
+				 if(value['pressed'] == true){
+			 		pressedKeys = true;
+				 }
+			}
+		})
 	} //end window.onload
+
+
 
 	//TESTING FUNCTIONS
 	let title = document.getElementById("headline");
 	let note = document.getElementById("note");
 
 	title.addEventListener("click", (e) => {
-		console.log(activeSound);
-		checkStatus();
-		console.log("window Event" + window.Event);
-		console.log(window.Event);
+		for (const [key, value] of Object.entries(keyData)) {
+		 console.log(`${key}: ${value['pressed']}`);
+			 if(value['pressed'] == true){
+		 		console.log(`${key}`);
+			 }
+		}
+		console.log('pr' + pressedKeys, 'ct' + keyCount);
+
+	
 	})
 
 	//KEYBOARD EVENT FUNCTIONS
+
+	function callKeyE(event) { //key "router"
+			if ((event.code === 'ArrowLeft') || (event.code === 'ArrowRight')){
+		    	(event.type === 'keydown') ? arrowSlide(event.code) : callKeyRelease(activeKey); 
+		    	return;
+		    } else
+
+		    if(keyData[event.code] && (!event.getModifierState('Meta'))) {
+				(event.type === 'keydown') ? callKeyMovement(event.code) : callKeyRelease(event.code);
+				return;
+			} 
+	}
 
 	function callKeyMovement(keyed) {  //call slide postition movement based off key
 		activeKey = keyed; //active sound key
@@ -371,20 +377,21 @@ canvas[resize] {
 						sound.fade(1,0,300);  
 					} 
 					playSound(activeKey);
-
 					//slide animation
 					window.globals.moveSlide(keyData[activeKey].num);
 					return;
 	}
 
 	function callKeyRelease(released){  //if key released
-		if((released === activeKey) && !sliding){
+		console.log("keyrelease");
+		if((released === activeKey)){
 				soundKeys--;
+				pressedKey = false;
 				sound.fade(1,0,300);
 				activeKey = null;
 				note.innerHTML = '';
-				return;
 			}
+			return;
 	}
 
 	//ARROW KEY FUNCTIONS
@@ -410,10 +417,29 @@ canvas[resize] {
 
 	//MOUSE EVENT HANDLERS
 
-	function callMouseDown(e) {  //on mouse down - mainly sound handler
+	function callMouseE(event) { //mouse "router"
+		if(event.button === 0){
+			if(event.type === 'mousedown' || event.type === "pointerdown"){
+				callMouseDown(event);
+				return;
+			} else if(event.type === 'mousemove' || event.type === "pointermove"){
+				callMouseMove(event);
+				return;
+			} else if(event.type === 'mouseup' || event.type === "pointerup") {
+				callMouseUp(event);	
+				return;
+				// callRelease(event);
+			} 
+		} else {
+			//event.preventDefault();
+		}
+	} 
+	
 
+	function callMouseDown(e) {  //on mouse down - mainly sound handler
 		if(soundKeys === 0) {  //if there is an active sound 
 			sliding = true;
+			window.globals.conflict = false;
 			if(e.offsetX > window.globals.start && e.offsetX < window.globals.end) {
 				if(activeSound){	
 					sound.fade(1,0,200);
@@ -423,6 +449,7 @@ canvas[resize] {
 				return;
 			} 
 		} else {
+			window.globals.conflict = true;
 			sliding = false;
 			return;
 		}
@@ -430,9 +457,10 @@ canvas[resize] {
 
 	//MOUSE EVENT FUNCTIONS
 
-	function callMouseMove(e) {  //on mouse drag - cooresponding sound handler
+	function callMouseMove(e) {  //on mouse move - cooresponding sound handler (movement handled in paperscript)
 		if(soundKeys === 0){	
 			if(sliding === true){
+				window.globals.conflict = false; //disable paperjs from moving slide
 				if(e.offsetX > window.globals.start && e.offsetX < window.globals.end){
 					coorKey = getKey(e.offsetX);
 
@@ -443,6 +471,7 @@ canvas[resize] {
 						return;	
 					}			
 				}else {  //if outside side bounds
+					window.globals.conflict = true;
 					console.log("mousemove not slide not moving // out of bounds " + sliding);
 					return;
 				}
@@ -453,6 +482,7 @@ canvas[resize] {
 	function callMouseUp(e) {  // on mouse up
 		if(sliding){
 		sliding = false;
+		window.globals.conflict = true;
 		sound.fade(1,0,200);
 		activeSound = false;
 		activeKey = null;
@@ -467,14 +497,14 @@ canvas[resize] {
 		sound = new Howl({
 			src: keyData[key].src[register].track,
 			onfade: function(){
-				sound.off();
+				sound.off(); //sound.off not stop
 				activeSound = false;
 			}
 		});
 		sound.play();
 		activeSound = sound.playing();
 
-		note.innerHTML = keyData[key].src[register].note; // + " Active Sound: " + activeSound;
+		note.innerHTML = keyData[key].src[register].note; 
 		return;
 	}
 
@@ -495,9 +525,6 @@ canvas[resize] {
 		let seventh = (window.innerWidth * 0.58) / 7;
 		let start = (window.innerWidth * 0.23);
 		let end = (window.innerWidth * 0.81);
-
-		console.log("num in getKey " + num);
-		console.log(end);
 
 		// num > (window.innerWidth * 0.23)) && (num <= (window.innerWidth * 0.26) //initial grab span should be between this
 
@@ -553,10 +580,72 @@ canvas[resize] {
 
 	//INACTIVITY AND OTHER OPERATIONAL FUNCTIONS
 
+
+	function handler(event) {
+			//console.log(event);
+			//clearAlert();
+			//console.log(document.readyState);
+			if(event.repeat){ 
+				needsSoundRepeat();
+				return;
+			} else {		
+			    	if((event.code === 'ArrowUp') || (event.code === 'ArrowDown')){	
+			    		(event.type === 'keydown') ? getRegister(event.code) : (register = 0);
+				    	
+			    		if(sliding || pressedKeys) {
+				    		sound.fade(1,0,300);
+				    		playSound(activeKey);	
+			    		}
+			    		return;
+				    }
+
+					if(!checkConflict(event)){
+						if(MouseEvent || PointerEvent){
+							callMouseE(event);
+						}
+						if(KeyboardEvent){
+							callKeyE(event);
+							return;
+						}
+					} else {
+						console.log("bypassed");
+						return;
+					}
+				}
+				
+		   // timeOutID = setTimeout(() => {window.globals.backToFirst();}, 5000);
+		}
+
+	const checkConflict = (e) => {
+			let conflict = false;
+			let letter;
+	
+			if(!sliding && !pressedKeys){ //if nothing pressed
+				return false;
+			} else if (sliding && keyData[e.code]){ //if mouse is already sliding and try to press directional key
+				conflict = true;
+			} else if(pressedKeys && MouseEvent.type === 'mousedown'){  // if directional key is already down and try to override with mouse
+				conflict = true;
+			} else if(keyData[e.code]) { 
+				for (const [key, value] of Object.entries(keyData)) { //if A - J is pressed
+				    if((value['pressed'] == true) && (key != 'ArrowLeft' && key != 'ArrowRight')) { 
+				 		letter = true;
+			 		}
+			 	}	 
+				if((e.code != 'ArrowLeft' && e.code != 'ArrowRight') && (keyData.ArrowLeft.pressed || keyData.ArrowRight.pressed)){ //if arrow key is already pressed and try to press A-J
+						conflict = true;
+				}else if((letter) && (e.code == 'ArrowLeft' || e.code == 'ArrowRight')){ // if A-J is already pressed and try to press arrow key
+					conflict = true;
+				}else if(keyData.ArrowLeft.pressed && keyData.ArrowRight.pressed){ //both arrow direction keys are pressed
+					conflict = true;
+				}
+			}
+			return conflict; 
+		}
+
 	function clearAlert() {
 		window.clearTimeout(timeoutID);
 	}
-
 
 </script>
 
