@@ -86,6 +86,11 @@
 		// pointerMove = document.addEventListener('pointermove', handler);
 		// pointerUp = document.addEventListener('pointerup', handler);
 
+		document.querySelector('#info').addEventListener('click', () => {
+			const containerRow = document.querySelector('.row');
+			containerRow.classList.contains('hide') ? containerRow.classList.remove('hide') : containerRow.classList.add('hide');
+		})
+
 		document.addEventListener('keydown', (e)=> { //listen on key down for keys pressed
 			if(keyData[e.code]) {
 				keyData[e.code].pressed = true;

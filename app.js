@@ -2,7 +2,6 @@ const express = require("express"),
 	  app = express(),
 	  ejs = require("ejs"),
 	  path = require("path"),
-	 // paper = require("paper"),
 	  port = 3000;
 
 app.engine('.html', require('ejs').__express);
