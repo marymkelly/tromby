@@ -14,10 +14,6 @@ app.get('/', (req, res) => {
   res.render('index.html')
 })
 
-app.get('/test', (req, res) => {
-	res.render('experiment.html')
-})
-
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`)
 })
