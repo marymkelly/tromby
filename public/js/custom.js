@@ -280,11 +280,19 @@
 	function getKey(num){ //get cooresponding sounds from key data when sliding
 
 		let key;
+		let sPt = .23;
+		let ePt = .81;
 
-		let seventh = (window.innerWidth * 0.58) / 7;
-		let start = (window.innerWidth * 0.23);
-		let end = (window.innerWidth * 0.81);
+		if(window.innerWidth <= (1401 * .78)){
+			let sPt = (0.23 * .78);
+		}
 
+		let start = (window.innerWidth * sPt);
+		let end = (window.innerWidth * ePt);
+		let seventh = (window.innerWidth * (ePt - sPt)) / 7;
+
+		console.log('7th', seventh, 'st', start, 'end', end)
+		console.log('windowInner', window.innerWidth);
 		// num > (window.innerWidth * 0.23)) && (num <= (window.innerWidth * 0.26) //initial grab span should be between this
 
 		if((num > start) && (num <= (start + (seventh * 1)))){  //<26% width client width 
@@ -338,7 +346,6 @@
 	}
 
 	//INACTIVITY AND OTHER OPERATIONAL FUNCTIONS
-
 
 	function handler(event) {
 			//console.log(event);
