@@ -2,7 +2,7 @@ const express = require("express"),
 	  app = express(),
 	  ejs = require("ejs"),
 	  path = require("path"),
-	  port = 3000;
+	  port = process.env.PORT || 3000;
 
 app.engine('.html', require('ejs').__express);
 app.set('views', path.join(__dirname, 'views'));
