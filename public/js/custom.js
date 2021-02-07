@@ -407,3 +407,5 @@
 	function startCounter() {
 		timeoutID = setTimeout(() => {window.globals.backToFirst();}, 4000);
 	}
+
+	
