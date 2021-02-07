@@ -228,7 +228,6 @@
 					}			
 				}else {  //if outside side bounds
 					window.globals.conflict = true;
-					console.log("mousemove not slide not moving // out of bounds " + sliding);
 					return;
 				}
 			}
