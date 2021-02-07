@@ -26,7 +26,8 @@ var bottomSlide; // 1085 - static - used
 var leftSlSvg; // ((slide.bounds.width / 2) - (pWidth / 3)); // left endpoint x of slide svg - used 
 var rightSlSvg; // ((slide.bounds.width / 2) + (pWidth / 3)); // right endpoint x of slide svg - used
 
-var trombone = paper.project.importSVG('/images/old/bell2.svg', function(onload) { //background trombone image
+// var trombone = paper.project.importSVG('/images/old/bell2.svg', function(onload) { //background trombone image
+var trombone = paper.project.importSVG('/images/t3bell.svg', function(onload) { //background trombone image
     trombone = onload;
     //console.log('Tromby', trombone.bounds.width, view.bounds.width)
     // trombone.bounds.width = (1401/1440) * view.bound.width;
@@ -38,7 +39,8 @@ var trombone = paper.project.importSVG('/images/old/bell2.svg', function(onload)
     //console.log(trombone.children);
 });
 
-var slide = paper.project.importSVG('/images/old/slide2.svg', function(onload) { //animated trombone slide
+// var slide = paper.project.importSVG('/images/old/slide2.svg', function(onload) { //animated trombone slide
+var slide = paper.project.importSVG('/images/t3slide.svg', function(onload) { //animated trombone slide
     slide = onload;
     
     console.log('Slidy', slide.bounds, 'view', view.bounds);
