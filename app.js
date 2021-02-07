@@ -10,7 +10,7 @@ app.use(express.static('public'));
 app.set('view engine', 'html');;
 
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
   res.render('index.html')
 })
 

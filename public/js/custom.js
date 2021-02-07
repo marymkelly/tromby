@@ -6,43 +6,43 @@
 
 	let keyData = {
 			KeyA: {
-		  		src: [{note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'B Flat', track: 'trombone/long/bFlatHighLong.mp3'},{note: 'B Flat', track: 'trombone/long/bFlatLong.mp3'}],
+		  		src: [{note: 'F', track: 'sounds/trombone/long/fLong.mp3'}, {note: 'B Flat', track: 'sounds/trombone/long/bFlatHighLong.mp3'},{note: 'B Flat', track: 'sounds/trombone/long/bFlatLong.mp3'}],
 				num: 1,
 				key: 'KeyA',
 				pressed: false
 			},
 			KeyS: {
-		  		src: [{note: 'E' , track: 'trombone/long/eLong.mp3'}, {note: 'A', track: 'trombone/long/aLong.mp3'}, {note: 'A', track: 'trombone/long/aLowLong.mp3'}],
+		  		src: [{note: 'E' , track: 'sounds/trombone/long/eLong.mp3'}, {note: 'A', track: 'sounds/trombone/long/aLong.mp3'}, {note: 'A', track: 'sounds/trombone/long/aLowLong.mp3'}],
 				num: 2,
 				key: 'KeyS',
 				pressed: false
 			},
 			KeyD: {
-		  		src: [{note: 'E Flat', track: 'trombone/long/eFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLong.mp3'}, {note: 'A Flat', track: 'trombone/long/aFlatLowLong.mp3'}],
+		  		src: [{note: 'E Flat', track: 'sounds/trombone/long/eFlatLong.mp3'}, {note: 'A Flat', track: 'sounds/trombone/long/aFlatLong.mp3'}, {note: 'A Flat', track: 'sounds/trombone/long/aFlatLowLong.mp3'}],
 				num: 3,
 				key: 'KeyD',
 				pressed: false
 			},
 			KeyF: {
-		  		src: [{note: 'D', track: 'trombone/long/dLong.mp3'}, {note: 'G', track: 'trombone/long/gLong.mp3'}, {note: 'G', track: 'trombone/long/gLowLong.mp3'}],
+		  		src: [{note: 'D', track: 'sounds/trombone/long/dLong.mp3'}, {note: 'G', track: 'sounds/trombone/long/gLong.mp3'}, {note: 'G', track: 'sounds/trombone/long/gLowLong.mp3'}],
 				num: 4,
 				key: 'KeyF',
 				pressed: false
 			},
 			KeyG: {
-		  		src: [{note: 'D Flat', track: 'trombone/long/dFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLong.mp3'}, {note: 'G Flat', track: 'trombone/long/gFlatLowLong.mp3'}],
+		  		src: [{note: 'D Flat', track: 'sounds/trombone/long/dFlatLong.mp3'}, {note: 'G Flat', track: 'sounds/trombone/long/gFlatLong.mp3'}, {note: 'G Flat', track: 'sounds/trombone/long/gFlatLowLong.mp3'}],
 				num: 5,
 				key: 'KeyG',
 				pressed: false
 			},
 			KeyH: {
-		  		src: [{note: 'C', track: 'trombone/long/cLong.mp3'}, {note: 'F', track: 'trombone/long/fLong.mp3'}, {note: 'F', track: 'trombone/long/fLowLong.mp3'}],		
+		  		src: [{note: 'C', track: 'sounds/trombone/long/cLong.mp3'}, {note: 'F', track: 'sounds/trombone/long/fLong.mp3'}, {note: 'F', track: 'sounds/trombone/long/fLowLong.mp3'}],		
 				num: 6,
 				key: 'KeyH',
 				pressed: false
 			},
 			KeyJ: {
-		  		src: [{note: 'B', track: 'trombone/long/bLong.mp3'}, {note: 'E', track: 'trombone/long/eLong.mp3'}, {note: 'E', track: 'trombone/long/eLowLong.mp3'}],  			
+		  		src: [{note: 'B', track: 'sounds/trombone/long/bLong.mp3'}, {note: 'E', track: 'sounds/trombone/long/eLong.mp3'}, {note: 'E', track: 'sounds/trombone/long/eLowLong.mp3'}],  			
 				num: 7,
 				key: 'KeyJ',
 				pressed: false
@@ -82,9 +82,6 @@
 		keyDown = document.addEventListener('keydown', handler);
 		keyUp = document.addEventListener('keyup', handler);
 		arrowKey = document.addEventListener('keydown', handler);
-		// pointerDown = document.addEventListener('pointerdown', handler); // remove pointer events for now
-		// pointerMove = document.addEventListener('pointermove', handler);
-		// pointerUp = document.addEventListener('pointerup', handler);
 
 		document.querySelector('#info').addEventListener('click', () => {
 			const containerRow = document.querySelector('.row');
@@ -148,8 +145,8 @@
 				sound.fade(1,0,300);
 				activeKey = null;
 				note.innerHTML = '';
+				startCounter();
 			}
-			startCounter();
 			return;
 	}
 
@@ -291,8 +288,6 @@
 		let end = (window.innerWidth * ePt);
 		let seventh = (window.innerWidth * (ePt - sPt)) / 7;
 
-		console.log('7th', seventh, 'st', start, 'end', end)
-		console.log('windowInner', window.innerWidth);
 		// num > (window.innerWidth * 0.23)) && (num <= (window.innerWidth * 0.26) //initial grab span should be between this
 
 		if((num > start) && (num <= (start + (seventh * 1)))){  //<26% width client width 
@@ -373,7 +368,7 @@
 							return;
 						}
 					} else {
-						console.log("bypassed");
+						console.log("bypassed control override");
 						return;
 					}
 				}

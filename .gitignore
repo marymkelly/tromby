@@ -1,5 +1,6 @@
 /node_modules
 .DS_Store
-/public/sounds
-/public/trombone
+/public/sounds/other
+/public/sounds/trombone/other
+/public/sounds/trombone/glissandos
 /public/images/old
