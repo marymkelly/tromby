@@ -1,0 +1,74 @@
+
+.about {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+
+    h1 {
+        font-size: 2.4rem;
+        font-weight: 500;
+        margin-left: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    h4 {
+        font-size: 1.2rem;
+    }
+    
+    h5 {
+        font-size: 1.2rem;
+        font-weight: 600;
+
+        a {
+            color: $gold;
+        }
+    }
+}
+
+.notes {
+    width: 80%;
+    margin: 2rem 0;
+    
+    ul {
+        font-weight: 400;
+        font-size: 1.1rem;
+    }
+
+    ul li {
+        font-weight: 400;
+        list-style-type: disc;
+        margin: 1rem 0;
+        margin-inline-start: 1.2rem;
+    }
+
+}
+
+h5.asterick {
+    margin-top: 3.2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.q-group {
+    padding: 0 2rem 1rem 2rem;
+    margin-bottom: 2rem;
+    // background-color: rgba(163, 203, 255, 0.12);
+    background-color: rgba(155, 151, 124, 0.12);
+    border-radius: 8px;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.container .about  {
+    padding: 1.5em 0;
+}
+
+.info__container {
+    display: flex;
+}
+
+#loading-loader {
+    margin-left: 1.5em;
+}

@@ -1,0 +1,136 @@
+$font-stack: Helvetica,
+sans-serif;
+$primary-color: #222222;
+$gold: #868268;
+
+@mixin t-ease {
+    transition: all .8s ease;
+}
+
+body {
+    font: 100% $font-stack;
+    color: $primary-color;
+    background-color: white;
+}
+.bar {
+    width: 100vw;
+    height: 70px;
+    background-color: #868268;
+    margin-bottom: 2rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.barflex {
+    height: 100%;
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    a {
+        height: 50px;
+    }
+
+}
+
+.tab {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 1.2rem;
+
+    a img {
+        width: 45px;
+        height: 50px;
+    }
+
+    a .masked {
+       width: 45px;
+       height: 50px;
+    }
+}
+
+.tab.logo {
+    width: 82px;
+    overflow: hidden;
+    transition: all 0.8s ease;
+}
+
+.tab.logo.open {
+    width: 500px;
+    transition: all 0.8s ease;
+}
+
+.tabgroup {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    // justify-content: flex-end;
+}
+
+.tab.link {
+    padding: 0.4rem 2rem;
+    border-radius: 8px;
+    margin: 0 .4rem;
+    @include t-ease;
+
+    p {
+        color: rgba(255,255,255, 0.85);
+    }
+
+    &:hover, [active]{
+        background-color: rgba(36, 36, 36, 0.12);
+        @include t-ease;
+
+         * {
+            color: white;
+        }
+    }
+
+    &[active] {
+        font-weight: 700;
+        background-color: rgba(36, 36, 36, 0.12);
+    }
+}
+
+.logoplate {
+    content: url("/images/brand/name-only.svg");
+    width: 220px;
+    height: 50px;
+    opacity: 0;
+    @include t-ease;
+    transition: transform 1s;
+}
+
+.logoplate.open {
+    opacity: .85;
+    @include t-ease;
+}
+
+.title {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+
+    h6 {
+        font-size: 2rem;
+        font-weight: 600;
+    }
+}
+
+
+.masked {
+    width: 45px;
+    height: 50px;
+    background-color: #111111;
+    -webkit-mask-image: url(/images/brand/mk-logo-crop.svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-image: url(/images/brand/mk-logo-crop.svg);
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+     

@@ -38,10 +38,6 @@ canvas[resize] {
 	left: 50px;
 	position: absolute;
 }
-.row{
-    height: 100%;
-    width: 100%; 
-}
 
 #control-title {
     text-align: center;
@@ -70,45 +66,12 @@ canvas[resize] {
     list-style-type: none;
 }
 
-.control-tester {
-    max-width: 80vw;
-    z-index: 2;
-    margin: 0 12rem;
-    display: flex;
-    /* margin: 0 auto; */
-}
-
-.control-image {
-    max-height: 100vh;
-    max-width: 100vh;
-    /* margin: 28vh 0; */
-}
-
 .disappear {
     display: none;
 }
 
 .hide{
     visibility: hidden;
-}
-
-#info{
-    border-radius: 50%;
-    background-color: lightskyblue;
-    height: 50px;
-    width: 50px;
-    text-align: center;
-    text-justify: center;
-    font-size: 2.5em;
-    right: 15%;
-    top: 20%;
-    position: fixed;
-    z-index: 3;
-}
-
-#info:hover{
-    background-color:steelblue;
-    color:black;
 }
 
 .container {
