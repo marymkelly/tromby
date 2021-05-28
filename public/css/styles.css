@@ -4,13 +4,9 @@ body {
   width: 100%;
   padding: 0;
   margin: 0;
-  /* font-family: 'Open Sans', sans-serif;
-  font-family: 'Architects Daughter', cursive; */
+  font-family: sans-serif;
   color: white;
   overflow: hidden;
-  /* background: #000428;  fallback for old browsers */
-  /* background: -webkit-linear-gradient(to right, #004e92, #000428);  Chrome 10-25, Safari 5.1-6 */
-  /* background: linear-gradient(to right, #004e92, #000428); W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 /* Scale canvas with resize attribute to full size */
@@ -207,6 +203,7 @@ body {
   font-weight: 500;
   margin-left: 2rem;
   margin-bottom: 3rem;
+  margin-top: 2rem;
 }
 .about h4 {
   font-size: 1.2rem;
@@ -214,6 +211,7 @@ body {
 .about h5 {
   font-size: 1.2rem;
   font-weight: 600;
+  line-height: 1.7rem;
 }
 .about h5 a {
   color: #868268;

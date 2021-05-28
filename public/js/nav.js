@@ -1,6 +1,6 @@
 //menu animation related
-let $logo = document.getElementById('logo');
-let $namelogo = document.getElementById('namelogo');
+const $logo = document.getElementById('logo');
+const $namelogo = document.getElementById('namelogo');
 
 $logo.addEventListener('mouseover', () => {
 	$logo.classList.add('open');
@@ -12,6 +12,16 @@ $logo.addEventListener('mouseout', () => {
 		$namelogo.classList.remove('open');
 })
 
-let navEls = [document.getElementById('navIndexLink'), document.getElementById('navAboutLink')];
-let found = navEls.find(el => el.pathname === window.location.pathname);
+const navEls = [document.getElementById('navIndexLink'), document.getElementById('navAboutLink')];
+const found = navEls.find(el => el.pathname === window.location.pathname);
 found.firstElementChild.setAttribute('active', "");
+
+
+//logo direct back to home from about page
+const navLogo = document.getElementById('navLogoLink');
+let path = window.location.pathname;
+
+if(path !== '/') {
+	navLogo.target = "_self";
+	navLogo.href = "/";
+}

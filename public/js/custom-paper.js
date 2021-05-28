@@ -30,7 +30,7 @@ var slide;
 var trombone;
 
 function initPaper(){
-    trombone = paper.project.importSVG('/images/t3bell.svg', function (onload) { //background trombone image
+    trombone = paper.project.importSVG('/images/trombone/bell.svg', function (onload) { //background trombone image
         trombone = onload;
 
         trombone.position = new Point((pWidth / 3), midY);
@@ -38,7 +38,7 @@ function initPaper(){
     });
 
     function callSlide(trombone) {
-        slide = paper.project.importSVG('/images/t3slide.svg', function (onload) { //animated trombone slide
+        slide = paper.project.importSVG('/images/trombone/slide.svg', function (onload) { //animated trombone slide
             slide = onload;
 
             slide.position = new Point((pWidth / 3), midY);
